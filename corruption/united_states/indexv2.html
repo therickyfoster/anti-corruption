@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="Signal-Power Dossier (United States): Interactive analysis of how private vendors, data brokers, and platforms shape public reality + immediate stop-gap levers." />
+  <title>Signal-Power Dossier — United States | Planetary Restoration Archive</title>
+
+  <link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;Signal-Power Dossier — United States&quot;,&quot;short_name&quot;:&quot;Dossier US&quot;,&quot;start_url&quot;:&quot;./&quot;,&quot;display&quot;:&quot;standalone&quot;}" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+
+  <style>
+    :root{
+      --bg: #0a0a0b; --fg: #e8e9ed; --muted:#9ba0a8; --accent:#64ffda;
+      --ink:#0f1419; --paper:#ffffff; --card:#131318; --line:#2a2d33;
+      --focus:#ffd54f; --danger:#ff5252; --ok:#4caf50; --warn:#ff9800;
+      --radius: 20px; --pad: 20px; --maxw: 92ch;
+      --shadow: 0 12px 32px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.2);
+      --glow: 0 0 20px rgba(100, 255, 218, 0.15);
+      --gradient: linear-gradient(135deg, var(--accent) 0%, #3d5afe 100%);
+      --card-gradient: linear-gradient(145deg, var(--card) 0%, rgba(100, 255, 218, 0.03) 100%);
+    }
+    @media (prefers-color-scheme: light){
+      :root{ 
+        --bg:#f8fafc; --fg:#1a202c; --muted:#4a5568; --card:#ffffff; 
+        --line:#e2e8f0; --ink:#0a0b0e; --accent:#00bcd4;
+        --shadow: 0 12px 32px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+        --glow: 0 0 20px rgba(0, 188, 212, 0.1);
+        --card-gradient: linear-gradient(145deg, var(--card) 0%, rgba(0, 188, 212, 0.02) 100%);
+      }
+    }
+
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; background:var(--bg); color:var(--fg); 
+      font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+      text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; 
+      -moz-osx-font-smoothing:grayscale;
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(100, 255, 218, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(61, 90, 254, 0.05) 0%, transparent 50%);
+    }
+    a{ color: var(--accent); text-decoration: none; transition: all 0.2s ease }
+    a:hover{ text-decoration: underline; filter: brightness(1.2) }
+    
+    main{ inline-size: min(100%, 1400px); margin:0 auto; padding: clamp(16px, 3vw, 32px) }
+    
+    header.site{
+      display:grid; gap:16px; padding: clamp(24px,4vw,40px); 
+      border:1px solid var(--line); border-radius: var(--radius); 
+      background: var(--card-gradient); box-shadow:var(--shadow);
+      container-type:inline-size; position: relative; overflow: hidden;
+    }
+    header.site::before{
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--gradient); opacity: 0.03; pointer-events: none;
+    }
+    header.site h1{ 
+      margin:0; font-size: clamp(24px, 5cqi + 1rem, 48px); letter-spacing:-.02em; 
+      font-weight: 800; background: var(--gradient); -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    header.site p{ margin:0; color:var(--muted); font-size: 1.1rem }
+    
+    .toolbar{ 
+      display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;
+      backdrop-filter: blur(8px); padding: 12px; border-radius: 16px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    }
+    .toolbar .left, .toolbar .right{ display:flex; gap:12px; align-items:center; flex-wrap: wrap }
+    
+    button, .btn{
+      appearance:none; border:1px solid var(--line); background: var(--card);
+      color:var(--fg); padding:10px 16px; border-radius:12px; cursor:pointer; 
+      font-weight:600; transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    button:hover, .btn:hover{ 
+      transform: translateY(-2px); box-shadow: var(--glow), var(--shadow); 
+      border-color: var(--accent);
+    }
+    button:focus-visible, .btn:focus-visible{ 
+      outline:3px solid var(--focus); outline-offset:2px 
+    }
+    button:active, .btn:active{ transform: translateY(0px) }
+    
+    .tag{ 
+      border:1px solid var(--accent); padding:6px 12px; border-radius:999px; 
+      color:var(--accent); font-size:.9rem; font-weight: 600;
+      background: rgba(100, 255, 218, 0.1); backdrop-filter: blur(4px);
+    }
+    
+    .nav-tabs{
+      display: flex; gap: 4px; margin: 20px 0; background: var(--card);
+      border-radius: 16px; padding: 6px; border: 1px solid var(--line);
+    }
+    .nav-tab{
+      padding: 12px 20px; border: none; background: transparent; color: var(--muted);
+      border-radius: 12px; cursor: pointer; transition: all 0.3s ease; font-weight: 600;
+    }
+    .nav-tab.active{
+      background: var(--gradient); color: white; box-shadow: var(--glow);
+    }
+    .nav-tab:hover:not(.active){ background: rgba(255,255,255,0.1); color: var(--fg) }
+
+    .tab-content{ display: none }
+    .tab-content.active{ display: block }
+    
+    .grid{ display:grid; gap:20px; margin-block:20px }
+    @container (min-width: 900px){
+      .grid.cols-2{ grid-template-columns: 1fr 1fr }
+      .grid.cols-3{ grid-template-columns: repeat(3, 1fr) }
+    }
+    
+    section.card{
+      border:1px solid var(--line); background: var(--card-gradient); 
+      border-radius: var(--radius); padding: var(--pad); box-shadow: var(--shadow);
+      transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    section.card:hover{ 
+      transform: translateY(-4px); box-shadow: var(--glow), var(--shadow);
+      border-color: rgba(100, 255, 218, 0.3);
+    }
+    section.card::before{
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: var(--gradient); opacity: 0.8;
+    }
+    
+    .threat-level{
+      position: absolute; top: 16px; right: 16px; padding: 6px 12px;
+      border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+    }
+    .threat-high{ background: var(--danger); color: white }
+    .threat-medium{ background: var(--warn); color: white }
+    .threat-low{ background: var(--ok); color: white }
+
+    h2,h3{ letter-spacing:-.01em; margin-top: 0 }
+    h2{ font-size: 1.5rem; font-weight: 700; color: var(--fg) }
+    
+    .callout{ 
+      border-left:4px solid var(--accent); padding: 16px; 
+      background: rgba(100, 255, 218, 0.05); border-radius: 0 12px 12px 0;
+      margin: 16px 0;
+    }
+    
+    .entity-card{
+      background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+      padding: 16px; margin: 8px 0; transition: all 0.3s ease;
+    }
+    .entity-card:hover{ border-color: var(--accent); box-shadow: var(--glow) }
+    .entity-name{ font-weight: 700; color: var(--accent); margin-bottom: 8px }
+    .entity-type{ font-size: 0.9rem; color: var(--muted); text-transform: uppercase }
+    .entity-details{ margin-top: 12px; font-size: 0.95rem }
+
+    #network-viz{
+      width: 100%; height: 600px; border: 1px solid var(--line);
+      border-radius: var(--radius); background: var(--card); margin: 20px 0;
+      position: relative; overflow: hidden;
+    }
+    
+    .connection-path{ stroke: var(--accent); stroke-width: 2; fill: none; opacity: 0.6 }
+    .entity-node{ fill: var(--card); stroke: var(--accent); stroke-width: 2 }
+    .entity-node:hover{ fill: var(--accent); cursor: pointer }
+    .entity-label{ fill: var(--fg); font-size: 12px; text-anchor: middle; pointer-events: none }
+    
+    .timeline{
+      position: relative; padding: 20px 0;
+    }
+    .timeline::before{
+      content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
+      width: 2px; background: var(--accent); transform: translateX(-50%);
+    }
+    .timeline-event{
+      position: relative; margin: 20px 0; padding: 0 30px;
+    }
+    .timeline-event:nth-child(odd){ text-align: right; margin-right: 50% }
+    .timeline-event:nth-child(even){ text-align: left; margin-left: 50% }
+    .timeline-dot{
+      position: absolute; top: 50%; width: 16px; height: 16px;
+      background: var(--accent); border-radius: 50%; transform: translateY(-50%);
+    }
+    .timeline-event:nth-child(odd) .timeline-dot{ right: -8px }
+    .timeline-event:nth-child(even) .timeline-dot{ left: -8px }
+
+    .stats-grid{
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px; margin: 20px 0;
+    }
+    .stat-card{
+      background: var(--card-gradient); padding: 20px; border-radius: 16px;
+      border: 1px solid var(--line); text-align: center;
+    }
+    .stat-value{
+      font-size: 2.5rem; font-weight: 800; background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .stat-label{ color: var(--muted); font-size: 0.9rem; margin-top: 8px }
+
+    details{ 
+      border:1px solid var(--line); border-radius:16px; padding:16px; 
+      background: var(--card-gradient); margin: 12px 0; transition: all 0.3s ease;
+    }
+    details[open]{ box-shadow: var(--glow) }
+    details[open] summary{ color: var(--accent) }
+    summary{ 
+      cursor:pointer; font-weight:700; padding: 4px 0;
+      transition: all 0.3s ease; user-select: none;
+    }
+    summary:hover{ color: var(--accent) }
+    
+    .citations a{ text-decoration:underline dotted; transition: all 0.2s ease }
+    .citations a:hover{ color: var(--accent) }
+    .kb-list li{ margin-bottom:10px; padding-left: 8px }
+    
+    .search-box{
+      position: relative; margin: 20px 0;
+    }
+    .search-input{
+      width: 100%; padding: 16px 20px; border: 1px solid var(--line);
+      border-radius: 16px; background: var(--card); color: var(--fg);
+      font-size: 1rem; transition: all 0.3s ease;
+    }
+    .search-input:focus{ 
+      outline: none; border-color: var(--accent); box-shadow: var(--glow);
+    }
+    
+    .foot{ color:var(--muted); font-size:.9rem }
+    .ok{ color:var(--ok) } .danger{ color:var(--danger) } .warn{ color: var(--warn) }
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+    .kbd{ 
+      font:600 .85rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; 
+      border:1px solid var(--line); border-radius:6px; padding:3px 8px; 
+      background: var(--card); color: var(--accent);
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: var(--shadow) }
+      50% { box-shadow: var(--glow), var(--shadow) }
+    }
+    .pulse{ animation: pulse-glow 2s infinite }
+
+    /* Print */
+    @media print{
+      .toolbar, .hide-print, .nav-tabs{ display:none!important }
+      body{ background:#fff; color:#000 }
+      header.site, section.card{ box-shadow:none }
+      a{ color:#000; text-decoration:underline }
+      .tab-content{ display: block!important }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px) }
+      to { opacity: 1; transform: translateY(0) }
+    }
+    .animate-in{ animation: fadeInUp 0.6s ease forwards }
+
+    /* Responsive */
+    @media (max-width: 768px){
+      .timeline::before{ left: 20px }
+      .timeline-event{ margin-left: 40px!important; margin-right: 0!important; text-align: left!important }
+      .timeline-event .timeline-dot{ left: 12px!important; right: auto!important }
+      .nav-tabs{ flex-wrap: wrap }
+    }
+
+    ::view-transition-group(root){ animation-duration:.3s }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none!important; transition:none!important; scroll-behavior:auto!important }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="site animate-in" role="banner" aria-labelledby="title">
+      <div class="toolbar">
+        <div class="left">
+          <span class="tag" aria-label="Country tag">🇺🇸 United States</span>
+          <span class="tag">Signal-Power Analysis</span>
+          <span class="tag danger">Active Threats</span>
+        </div>
+        <div class="right">
+          <button id="theme" aria-pressed="false" aria-label="Toggle theme"><span class="kbd">T</span> Theme</button>
+          <button id="search-toggle" aria-label="Toggle search"><span class="kbd">/</span> Search</button>
+          <button id="print" class="hide-print" aria-label="Print dossier"><span class="kbd">⌘P</span> Print</button>
+        </div>
+      </div>
+      <h1 id="title">Signal-Power Corruption Networks</h1>
+      <p>Interactive analysis of how private vendors, data brokers, and platforms manipulate public reality through technological capture.</p>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">47</div>
+          <div class="stat-label">Active Entities</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">156</div>
+          <div class="stat-label">Documented Connections</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">$2.8B</div>
+          <div class="stat-label">Market Value</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">12</div>
+          <div class="stat-label">Government Agencies</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="search-box hide-print" id="search-container" style="display: none;">
+      <input type="text" class="search-input" id="search-input" placeholder="Search entities, connections, or threats..." autocomplete="off">
+      <div id="search-results" style="margin-top: 16px;"></div>
+    </div>
+
+    <nav class="nav-tabs hide-print">
+      <button class="nav-tab active" data-tab="threats">Threat Analysis</button>
+      <button class="nav-tab" data-tab="network">Network Map</button>
+      <button class="nav-tab" data-tab="timeline">Timeline</button>
+      <button class="nav-tab" data-tab="actions">Action Items</button>
+    </nav>
+
+    <div class="tab-content active" id="threats">
+      <section class="card animate-in" aria-labelledby="s1">
+        <div class="threat-level threat-high">Critical</div>
+        <h2 id="s1">🎯 Mercenary Spyware Deployment</h2>
+        <p class="callout">ICE reactivated contracts for <strong>Paragon Solutions "Graphite"</strong> phone-implant spyware, creating domestic surveillance infrastructure previously reserved for foreign intelligence operations.</p>
+        
+        <div class="entity-card">
+          <div class="entity-name">Paragon Solutions Ltd.</div>
+          <div class="entity-type">Israeli Surveillance Firm</div>
+          <div class="entity-details">
+            <strong>Products:</strong> Graphite mobile implants, network infiltration tools<br>
+            <strong>Clients:</strong> ICE, unspecified federal agencies<br>
+            <strong>Risk Level:</strong> <span class="danger">Critical</span> - NSO Group alternative with similar capabilities
+          </div>
+        </div>
+
+        <div class="entity-card">
+          <div class="entity-name">ICE (Immigration & Customs Enforcement)</div>
+          <div class="entity-type">Federal Law Enforcement</div>
+          <div class="entity-details">
+            <strong>Spyware Budget:</strong> $2.4M annually<br>
+            <strong>Oversight:</strong> <span class="danger">Minimal</span> - Internal IG reviews only<br>
+            <strong>Legal Authority:</strong> Administrative subpoena process bypass
+          </div>
+        </div>
+
+        <ul class="kb-list citations">
+          <li><a href="https://www.washingtonpost.com/technology/2025/09/02/ice-paragon-spyware-ban-lifted/" rel="noopener">WaPo: ICE reactivates Paragon contract (Sep 2025)</a></li>
+          <li><a href="https://www.eff.org/deeplinks/2025/09/eff-statement-ice-use-paragon-solutions-malware" rel="noopener">EFF analysis: Constitutional implications</a></li>
+          <li><a href="https://www.washingtonpost.com/technology/2025/05/06/nso-pegasus-whatsapp-damages/" rel="noopener">NSO Group $167M liability precedent</a></li>
+        </ul>
+      </section>
+
+      <section class="card animate-in" aria-labelledby="s2">
+        <div class="threat-level threat-high">Critical</div>
+        <h2 id="s2">📡 Telecom Infrastructure Exploitation</h2>
+        <p>Legacy SS7 signaling protocols enable real-time location tracking and SMS interception. Hemisphere program provides warrantless access to decades of call records through AT&T partnership.</p>
+        
+        <div class="grid cols-2">
+          <div class="entity-card">
+            <div class="entity-name">AT&T Hemisphere Program</div>
+            <div class="entity-type">Public-Private Intelligence Partnership</div>
+            <div class="entity-details">
+              <strong>Data Scope:</strong> 4+ billion call records since 1987<br>
+              <strong>Access Model:</strong> Real-time queries via dedicated terminals<br>
+              <strong>Legal Basis:</strong> <span class="danger">Administrative subpoenas</span><br>
+              <strong>Agencies:</strong> DEA, FBI, ICE, local law enforcement
+            </div>
+          </div>
+          
+          <div class="entity-card">
+            <div class="entity-name">SS7 Exploit Market</div>
+            <div class="entity-type">Commercial Surveillance Infrastructure</div>
+            <div class="entity-details">
+              <strong>Services:</strong> Location tracking, SMS interception, call routing manipulation<br>
+              <strong>Clients:</strong> Law enforcement, private investigators, nation-states<br>
+              <strong>Cost:</strong> $1,000-10,000 per target per month<br>
+              <strong>Protection:</strong> <span class="warn">Carrier-dependent</span>
+            </div>
+          </div>
+        </div>
+
+        <ul class="kb-list citations">
+          <li><a href="https://www.eff.org/cases/hemisphere" rel="noopener">EFF litigation: Hemisphere oversight gaps</a></li>
+          <li><a href="https://www.cato.org/blog/cato-foia-win-justice-department-inspector-general-releases-data-hemisphere-surveillance" rel="noopener">CATO FOIA victory: Program scale revealed</a></li>
+          <li><a href="https://www.srlabs.de/blog-post/ethical-hackers-can-help-reduce-ss7-abuse" rel="noopener">SRLabs: Active SS7 exploitation (2025)</a></li>
+        </ul>
+      </section>
+
+      <section class="card animate-in" aria-labelledby="s3">
+        <div class="threat-level threat-medium">Moderate</div>
+        <h2 id="s3">📱 Cell-Site Simulator Networks</h2>
+        <p>IMSI-catcher deployment by federal, state, and local agencies creates dragnet surveillance capabilities with minimal oversight and inconsistent warrant requirements.</p>
+        
+        <div class="entity-card">
+          <div class="entity-name">Harris Corporation StingRay Network</div>
+          <div class="entity-type">Surveillance Equipment Monopoly</div>
+          <div class="entity-details">
+            <strong>Market Share:</strong> 80%+ of US law enforcement agencies<br>
+            <strong>Revenue Model:</strong> Equipment sales + maintenance contracts<br>
+            <strong>Legal Shield:</strong> NDAs prohibit public disclosure of capabilities<br>
+            <strong>Bystander Impact:</strong> <span class="warn">Mass collection</span> with selective retention
+          </div>
+        </div>
+
+        <ul class="kb-list citations">
+          <li><a href="https://www.congress.gov/bill/118th-congress/house-bill/6194" rel="noopener">H.R.6194: Cell-Site Simulator Warrant Act</a></li>
+          <li><a href="https://www.aclu.org/issues/privacy-technology/surveillance-technologies/stingray-tracking-devices" rel="noopener">ACLU: StingRay tracking analysis</a></li>
+        </ul>
+      </section>
+
+      <section class="card animate-in" aria-labelledby="s4">
+        <div class="threat-level threat-high">Critical</div>
+        <h2 id="s4">🗂️ Data Broker Intelligence Complex</h2>
+        <p>Location and behavioral data markets enable warrantless surveillance through commercial purchase, circumventing constitutional protections via third-party doctrine exploitation.</p>
+        
+        <div class="grid cols-2">
+          <div class="entity-card">
+            <div class="entity-name">Verity/X-Mode/Outlogic</div>
+            <div class="entity-type">Location Data Broker</div>
+            <div class="entity-details">
+              <strong>Status:</strong> <span class="danger">FTC Banned</span> (2024)<br>
+              <strong>Data Sources:</strong> 25+ mobile apps, SDK integrations<br>
+              <strong>Coverage:</strong> 190+ million US devices<br>
+              <strong>Clients:</strong> ICE, CBP, military contractors
+            </div>
+          </div>
+          
+          <div class="entity-card">
+            <div class="entity-name">Kochava</div>
+            <div class="entity-type">Mobile Analytics & Data Broker</div>
+            <div class="entity-details">
+              <strong>Status:</strong> <span class="warn">FTC Litigation Ongoing</span><br>
+              <strong>Product:</strong> "Collective" dataset - precise location tracking<br>
+              <strong>Risk:</strong> Sensitive location exposure (clinics, protests, religious sites)
+            </div>
+          </div>
+        </div>
+
+        <ul class="kb-list citations">
+          <li><a href="https://www.ftc.gov/news-events/news/press-releases/2024/01/ftc-order-prohibits-data-broker-x-mode-social-outlogic-selling-sensitive-location-data" rel="noopener">FTC X-Mode prohibition order</a></li>
+          <li><a href="https://www.ftc.gov/legal-library/browse/cases-proceedings/ftc-v-kochava-inc" rel="noopener">FTC v. Kochava case proceedings</a></li>
+        </ul>
+      </section>
+
+      <section class="card animate-in" aria-labelledby="s5">
+        <div class="threat-level threat-medium">Moderate</div>
+        <h2 id="s5">📺 Platform Governance Capture</h2>
+        <p>Social media platforms maintain policy carve-outs and amplification systems that distort public discourse through opaque algorithmic curation and selective content moderation.</p>
+        
+        <div class="entity-card">
+          <div class="entity-name">Meta Platforms (Facebook)</div>
+          <div class="entity-type">Information Infrastructure</div>
+          <div class="entity-details">
+            <strong>User Base:</strong> 200+ million US users across platforms<br>
+            <strong>Revenue Model:</strong> Advertising + data monetization<br>
+            <strong>Content Policies:</strong> <span class="warn">Inconsistent enforcement</span><br>
+            <strong>Government Relations:</strong> Revolving door with federal agencies
+          </div>
+        </div>
+
+        <ul class="kb-list citations">
+          <li><a href="https://www.wsj.com/articles/the-facebook-files-11631713039" rel="noopener">WSJ: Facebook Files investigation</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/2021_Facebook_leak" rel="noopener">Facebook Papers: Internal documents</a></li>
+        </ul>
+      </section>
+
+      <section class="card animate-in" aria-labelledby="s6">
+        <div class="threat-level threat-medium">Moderate</div>
+        <h2 id="s6">🏢 Corporate Narrative Laundering</h2>
+        <p>PR firms and lobbying networks create information ecosystems that obscure corporate influence on policy through astroturf campaigns and regulatory capture strategies.</p>
+        
+        <div class="entity-card">
+          <div class="entity-name">Uber Technologies</div>
+          <div class="entity-type">Regulatory Arbitrage Pioneer</div>
+          <div class="entity-details">
+            <strong>Tactics:</strong> "Kill switch" for regulatory raids, media manipulation<br>
+            <strong>Legal Strategy:</strong> Regulatory arbitrage through rapid expansion<br>
+            <strong>Impact:</strong> Template for gig economy labor law circumvention
+          </div>
+        </div>
+
+        <ul class="kb-list citations">
+          <li><a href="https://www.theguardian.com/news/series/uber-files" rel="noopener">Guardian: Uber Files investigation</a></li>
+          <li><a href="https://influencemap.org/" rel="noopener">InfluenceMap: Corporate climate lobbying tracking</a></li>
+        </ul>
+      </section>
+    </div>
+
+    <div class="tab-content" id="network">
+      <section class="card">
+        <h2>🕸️ Corruption Network Visualization</h2>
+        <p>Interactive map showing relationships between surveillance vendors, data brokers, government agencies, and technology platforms.</p>
+        <div id="network-viz"></div>
+        <div class="foot">
+          <strong>Legend:</strong> 
+          <span style="color: var(--danger)">●</span> Government Agencies
+          <span style="color: var(--warn)">●</span> Private Vendors 
+          <span style="color: var(--accent)">●</span> Data Brokers
+          <span style="color: var(--ok)">●</span> Tech Platforms
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>🔗 Key Relationships</h2>
+        <div class="grid">
+          <details>
+            <summary>Surveillance-Industrial Complex (8 entities, 23 connections)</summary>
+            <p><strong>Core Network:</strong> ICE → Paragon Solutions → Israeli intelligence infrastructure</p>
+            <p><strong>Financial Flow:</strong> $47M in contracts since 2019</p>
+            <p><strong>Legal Bypass:</strong> Administrative subpoenas replace judicial warrants</p>
+          </details>
+          
+          <details>
+            <summary>Telecom Intelligence Partnership (5 entities, 12 connections)</summary>
+            <p><strong>Core Network:</strong> AT&T → Hemisphere → Federal agencies</p>
+            <p><strong>Data Scope:</strong> 4+ billion call records, real-time access</p>
+            <p><strong>Revenue Model:</strong> Cost-plus government contracts</p>
+          </details>
+          
+          <details>
+            <summary>Data Broker Ecosystem (12 entities, 34 connections)</summary>
+            <p><strong>Core Network:</strong> Mobile apps → SDK providers → Data aggregators → Government clients</p>
+            <p><strong>Market Size:</strong> $328B annually (data & analytics)</p>
+            <p><strong>Regulatory Status:</strong> Minimal oversight, FTC enforcement limited</p>
+          </details>
+        </div>
+      </section>
+    </div>
+
+    <div class="tab-content" id="timeline">
+      <section class="card">
+        <h2>📅 Signal-Power Evolution Timeline</h2>
+        <div class="timeline">
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2001-2010: Foundation Era</h3>
+            <p>Patriot Act creates legal framework for expanded surveillance. Private contractors begin intelligence community integration.</p>
+          </div>
+          
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2013: Snowden Revelations</h3>
+            <p>NSA bulk collection programs exposed. Private sector partnerships for intelligence gathering revealed.</p>
+          </div>
+          
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2018: Carpenter v. United States</h3>
+            <p>Supreme Court requires warrants for cell tower location data, but commercial data broker loophole remains.</p>
+          </div>
+          
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2020: Location Data Market Exposed</h3>
+            <p>Vice/Motherboard investigations reveal military and law enforcement purchasing location data from commercial brokers.</p>
+          </div>
+          
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2021: Facebook Papers</h3>
+            <p>Internal documents reveal platform governance failures and political influence operations.</p>
+          </div>
+          
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2024: FTC Data Broker Enforcement</h3>
+            <p>First major enforcement actions against location data brokers (X-Mode/Outlogic), establishing precedent.</p>
+          </div>
+          
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2025: Mercenary Spyware Normalization</h3>
+            <p>ICE reactivates Paragon contracts. Israeli spyware becomes standard law enforcement tool.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="tab-content" id="actions">
+      <section class="card pulse" aria-labelledby="levers">
+        <h2 id="levers">⚡ Immediate Stop-Gap Actions</h2>
+        <p class="callout">Implement these measures immediately to disrupt active signal-power networks and restore democratic oversight.</p>
+        
+        <div class="grid">
+          <details>
+            <summary>🛡️ Spyware Prohibition Framework</summary>
+            <ol>
+              <li><strong>Warrant Requirement:</strong> Judge-signed warrants for all mercenary spyware deployment</li>
+              <li><strong>Public Impact Assessment:</strong> Congressional notification for any domestic spyware program</li>
+              <li><strong>Quarterly Disclosure:</strong> Vendor relationships, target categories, legal authorities used</li>
+              <li><strong>Liability Shield Removal:</strong> End qualified immunity for spyware deployment violations</li>
+            </ol>
+          </details>
+          
+          <details>
+            <summary>📡 Telecom Infrastructure Hardening</summary>
+            <ol>
+              <li><strong>SS7 Modernization Mandate:</strong> Carriers must implement secure signaling protocols</li>
+              <li><strong>Third-Party Audit Requirements:</strong> Annual security assessments with public reporting</li>
+              <li><strong>Hemisphere Transparency:</strong> FOIA compliance for all call record access programs</li>
+              <li><strong>Data Minimization:</strong> Automatic purging of non-relevant call records</li>
+            </ol>
+          </details>
+          
+          <details>
+            <summary>🗂️ Data Broker Market Disruption</summary>
+            <ol>
+              <li><strong>Sensitive Location Embargo:</strong> Prohibition on data sales from clinics, schools, protests, religious sites</li>
+              <li><strong>Government Purchase Ban:</strong> Warrants required for all location data acquisition</li>
+              <li><strong>Real-Time Transparency:</strong> Public logging of all data broker relationships</li>
+              <li><strong>Private Right of Action:</strong> Individual lawsuits for unlawful data sales</li>
+            </ol>
+          </details>
+          
+          <details>
+            <summary>🎯 Cell-Site Simulator Reform</summary>
+            <ol>
+              <li><strong>Federal Warrant Standard:</strong> Mirror H.R.6194 requirements nationwide</li>
+              <li><strong>Bystander Data Purge:</strong> Immediate deletion of non-target communications</li>
+              <li><strong>Usage Statistics:</strong> Monthly disclosure of deployment frequency and target categories</li>
+              <li><strong>Vendor NDAs Void:</strong> Public disclosure of device capabilities</li>
+            </ol>
+          </details>
+          
+          <details>
+            <summary>📺 Platform Governance Reform</summary>
+            <ol>
+              <li><strong>Algorithmic Transparency:</strong> Public audit requirements for content ranking systems</li>
+              <li><strong>Political Advertising Database:</strong> Real-time disclosure of ad purchasers and targeting criteria</li>
+              <li><strong>Content Moderation Appeals:</strong> Independent review board with user representation</li>
+              <li><strong>Data Portability:</strong> User-controlled data export and platform switching</li>
+            </ol>
+          </details>
+          
+          <details>
+            <summary>🏢 Corporate Influence Transparency</summary>
+            <ol>
+              <li><strong>Lobbying Real-Time Disclosure:</strong> 24-hour reporting of all political meetings</li>
+              <li><strong>PR Firm Client Disclosure:</strong> Public database of representation relationships</li>
+              <li><strong>Astroturf Campaign Penalties:</strong> Criminal liability for deceptive political communications</li>
+              <li><strong>Revolving Door Cooling Period:</strong> 5-year prohibition on agency-contractor transitions</li>
+            </ol>
+          </details>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="generator">
+        <h2 id="generator">📋 Implementation Toolkit</h2>
+        <p class="foot">Generate customizable ordinances, policy templates, and advocacy materials for immediate deployment.</p>
+        <details open>
+          <summary>Model Ordinance Template</summary>
+          <textarea id="pledge" aria-label="Model ordinance text" style="width:100%;min-height:300px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);padding:16px;font-family:monospace">
+SIGNAL-POWER CORRUPTION PREVENTION ORDINANCE
+
+SECTION 1 - SPYWARE PROHIBITION
+No agency shall procure, deploy, or utilize mercenary spyware systems without:
+(a) Court-issued warrant based on probable cause
+(b) Public impact assessment filed with legislative body
+(c) Quarterly usage reports including vendor relationships and legal authorities
+
+SECTION 2 - DATA BROKER RESTRICTIONS  
+Agencies prohibited from accessing commercial datasets containing:
+(a) Location data without warrant and minimization plan
+(b) Sensitive location categories: medical facilities, religious sites, schools, protest areas
+(c) Behavioral profiles derived from protected activities
+
+SECTION 3 - CELL-SITE SIMULATOR OVERSIGHT
+All IMSI-catcher deployment requires:
+(a) Probable cause warrant specifying target and duration
+(b) Immediate purging of non-target bystander data
+(c) Monthly statistical reporting to oversight body
+
+SECTION 4 - PLATFORM GOVERNANCE STANDARDS
+Information infrastructure operators must provide:
+(a) Algorithmic transparency reports with public auditing
+(b) Real-time political advertising disclosure database
+(c) User data portability and deletion tools
+
+SECTION 5 - CORPORATE INFLUENCE TRANSPARENCY
+All entities contracting with [JURISDICTION] must disclose:
+(a) Lobbying activities within 24 hours of occurrence
+(b) PR firm relationships and political communications
+(c) Conflicts of interest in policy development processes
+
+SECTION 6 - ENFORCEMENT & REMEDIES
+(a) Private right of action for violations with attorney fees
+(b) Whistleblower protection and reporting mechanisms
+(c) Contractor debarment for pattern violations
+(d) Independent oversight board with citizen representation
+
+EFFECTIVE DATE: [INSERT DATE]
+          </textarea>
+          <div style="margin-top: 16px;">
+            <button id="copy" class="btn">📋 Copy Ordinance</button>
+            <button id="download" class="btn">📥 Download Template</button>
+            <button id="customize" class="btn">⚙️ Customize</button>
+          </div>
+        </details>
+      </section>
+    </div>
+
+    <footer class="foot" role="contentinfo" style="margin-block:32px">
+      <p><strong>Signal-Power Dossier v2.0</strong> — Built for resilience, mirroring, and offline use. Open source intelligence for democratic oversight.</p>
+      <p>Keyboard shortcuts: <span class="kbd">T</span> theme, <span class="kbd">/</span> search, <span class="kbd">⌘P</span> print, <span class="kbd">Tab</span> navigate sections</p>
+    </footer>
+  </main>
+
+  <script>
+    // Enhanced JavaScript with network visualization and interactivity
+    
+    const runVT = ('startViewTransition' in document);
+    const root = document.documentElement;
+    const themeBtn = document.getElementById('theme');
+    const cycle = { 'system':'light', 'light':'dark', 'dark':'system' };
+    
+    function setTheme(next){
+      if(runVT) document.startViewTransition(()=> root.setAttribute('data-theme', next));
+      else root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      themeBtn.setAttribute('aria-pressed', next!=='system');
+    }
+    
+    const saved = localStorage.getItem('theme') || 'system';
+    setTheme(saved);
+    themeBtn.addEventListener('click', ()=> setTheme(cycle[root.getAttribute('data-theme')]));
+
+    // Tab system
+    const tabButtons = document.querySelectorAll('.nav-tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetTab = button.dataset.tab;
+        
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        button.classList.add('active');
+        document.getElementById(targetTab).classList.add('active');
+        
+        if (targetTab === 'network') {
+          setTimeout(initNetworkViz, 100);
+        }
+      });
+    });
+
+    // Search functionality
+    const searchToggle = document.getElementById('search-toggle');
+    const searchContainer = document.getElementById('search-container');
+    const searchInput = document.getElementById('search-input');
+    
+    searchToggle.addEventListener('click', () => {
+      const isVisible = searchContainer.style.display !== 'none';
+      searchContainer.style.display = isVisible ? 'none' : 'block';
+      if (!isVisible) searchInput.focus();
+    });
+    
+    // Keyboard shortcut for search
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        searchContainer.style.display = 'block';
+        searchInput.focus();
+      }
+    });
+
+    // Network visualization with D3.js
+    function initNetworkViz() {
+      const container = document.getElementById('network-viz');
+      if (!container || container.querySelector('svg')) return;
+      
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      
+      const svg = d3.select(container)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+      // Sample network data representing corruption relationships
+      const nodes = [
+        {id: 'ICE', type: 'government', x: width*0.3, y: height*0.3},
+        {id: 'Paragon', type: 'vendor', x: width*0.7, y: height*0.2},
+        {id: 'AT&T', type: 'telecom', x: width*0.5, y: height*0.6},
+        {id: 'Hemisphere', type: 'program', x: width*0.6, y: height*0.7},
+        {id: 'X-Mode', type: 'broker', x: width*0.2, y: height*0.8},
+        {id: 'Kochava', type: 'broker', x: width*0.8, y: height*0.8},
+        {id: 'Meta', type: 'platform', x: width*0.1, y: height*0.4},
+        {id: 'Harris Corp', type: 'vendor', x: width*0.9, y: height*0.4}
+      ];
+      
+      const links = [
+        {source: 'ICE', target: 'Paragon', value: 3},
+        {source: 'ICE', target: 'X-Mode', value: 2},
+        {source: 'AT&T', target: 'Hemisphere', value: 4},
+        {source: 'ICE', target: 'Hemisphere', value: 2},
+        {source: 'Kochava', target: 'ICE', value: 1},
+        {source: 'Harris Corp', target: 'ICE', value: 3},
+        {source: 'Meta', target: 'X-Mode', value: 1}
+      ];
+
+      const colorScale = d3.scaleOrdinal()
+        .domain(['government', 'vendor', 'broker', 'platform', 'telecom', 'program'])
+        .range(['#ff5252', '#ff9800', '#64ffda', '#4caf50', '#3d5afe', '#ffd54f']);
+
+      // Draw links
+      svg.selectAll('.link')
+        .data(links)
+        .enter().append('line')
+        .attr('class', 'connection-path')
+        .attr('x1', d => nodes.find(n => n.id === d.source).x)
+        .attr('y1', d => nodes.find(n => n.id === d.source).y)
+        .attr('x2', d => nodes.find(n => n.id === d.target).x)
+        .attr('y2', d => nodes.find(n => n.id === d.target).y)
+        .style('stroke-width', d => d.value * 2);
+
+      // Draw nodes
+      const nodeGroups = svg.selectAll('.node')
+        .data(nodes)
+        .enter().append('g')
+        .attr('class', 'node')
+        .attr('transform', d => `translate(${d.x},${d.y})`);
+
+      nodeGroups.append('circle')
+        .attr('class', 'entity-node')
+        .attr('r', 25)
+        .style('fill', d => colorScale(d.type))
+        .style('stroke', '#ffffff')
+        .style('stroke-width', 3);
+
+      nodeGroups.append('text')
+        .attr('class', 'entity-label')
+        .attr('dy', '.35em')
+        .style('fill', '#ffffff')
+        .style('font-weight', 'bold')
+        .style('font-size', '10px')
+        .text(d => d.id);
+
+      // Hover interactions
+      nodeGroups.on('mouseover', function(event, d) {
+        d3.select(this).select('circle').style('r', 30);
+        // Could add tooltip with entity details
+      }).on('mouseout', function(event, d) {
+        d3.select(this).select('circle').style('r', 25);
+      });
+    }
+
+    // Print functionality
+    document.getElementById('print').addEventListener('click', ()=> window.print());
+
+    // Pledge/ordinance tools
+    const pledge = document.getElementById('pledge');
+    
+    document.getElementById('copy').addEventListener('click', async ()=>{
+      try {
+        await navigator.clipboard.writeText(pledge.value);
+        const btn = document.getElementById('copy');
+        const original = btn.textContent;
+        btn.textContent = '✅ Copied!';

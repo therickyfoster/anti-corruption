@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="zh-Hans" data-theme="system">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="信号权力档案（中国）：电信枢纽、信令与漫游、数据经纪与SDK链、平台治理与叙事操作，以及跨境可执行的制衡措施。离线优先、可打印、无外部依赖。" />
+  <title>信号权力档案 — 中国 | Planetary Restoration Archive</title>
+
+  <!-- Canonical / Alternates (inverse points to nested Traditional) -->
+  <link rel="canonical" href="https://planetaryrestorationarchive.com/corruption/china/" />
+  <link rel="alternate" hreflang="zh-Hans" href="https://planetaryrestorationarchive.com/corruption/china/" />
+  <link rel="alternate" hreflang="zh-Hant" href="https://planetaryrestorationarchive.com/corruption/china/traditional/" />
+  <link rel="alternate" hreflang="x-default" href="https://planetaryrestorationarchive.com/corruption/china/" />
+
+  <!-- Embedded PWA manifest (no external CDNs) -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Signal-Power Dossier — China","short_name":"Dossier CN","start_url":"./","display":"standalone"}' />
+
+  <style>
+    :root{
+      --bg:#0a0a0b; --fg:#e8e9ed; --muted:#9ba0a8; --accent:#64ffda;
+      --ink:#0f1419; --paper:#ffffff; --card:#131318; --line:#2a2d33;
+      --focus:#ffd54f; --danger:#ff5252; --ok:#4caf50; --warn:#ff9800;
+      --radius:20px; --pad:20px;
+      --shadow:0 12px 32px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.2);
+      --gradient:linear-gradient(135deg, var(--accent) 0%, #3d5afe 100%);
+      --card-gradient:linear-gradient(145deg, var(--card) 0%, rgba(100,255,218,.03) 100%);
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f8fafc; --fg:#1a202c; --muted:#4a5568; --card:#ffffff; --line:#e2e8f0; --accent:#00bcd4;
+        --shadow:0 12px 32px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
+        --card-gradient:linear-gradient(145deg, var(--card) 0%, rgba(0,188,212,.02) 100%);
+      }
+    }
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,Arial,sans-serif;
+      text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      background-image:
+        radial-gradient(circle at 25% 25%, rgba(100,255,218,.05) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(61,90,254,.05) 0%, transparent 50%);
+    }
+    a{ color:var(--accent); text-decoration:none }
+    a:hover{ text-decoration:underline }
+    a:focus-visible{ outline:3px solid var(--focus); outline-offset:2px }
+
+    main{ inline-size:min(100%,1400px); margin:0 auto; padding:clamp(16px,3vw,32px) }
+
+    header.site{
+      display:grid; gap:16px; padding:clamp(24px,4vw,40px);
+      border:1px solid var(--line); border-radius:var(--radius);
+      background:var(--card-gradient); box-shadow:var(--shadow);
+      container-type:inline-size; position:relative; overflow:hidden;
+    }
+    header.site::before{ content:""; position:absolute; inset:0; background:var(--gradient); opacity:.03; pointer-events:none }
+    header.site h1{
+      margin:0; font-size:clamp(24px,5cqi + 1rem,48px); letter-spacing:-.02em; font-weight:800;
+      background:var(--gradient); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    header.site p{ margin:0; color:var(--muted); font-size:1.05rem }
+
+    .toolbar{
+      display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;
+      backdrop-filter:blur(8px); padding:12px; border-radius:16px;
+      background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+    }
+    .toolbar .left,.toolbar .right{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+    button,.btn{
+      appearance:none; border:1px solid var(--line); background:var(--card); color:var(--fg);
+      padding:10px 16px; border-radius:12px; cursor:pointer; font-weight:600;
+      transition:transform .2s, box-shadow .2s, border-color .2s;
+    }
+    button:hover,.btn:hover{ transform:translateY(-2px); box-shadow:0 0 20px rgba(100,255,218,.15), var(--shadow); border-color:var(--accent) }
+    button:focus-visible{ outline:3px solid var(--focus); outline-offset:2px }
+    .tag{ border:1px solid var(--accent); padding:6px 12px; border-radius:999px; color:var(--accent); font-size:.9rem; font-weight:600; background:rgba(100,255,218,.1) }
+
+    .nav-tabs{ display:flex; gap:4px; margin:20px 0; background:var(--card); border-radius:16px; padding:6px; border:1px solid var(--line) }
+    .nav-tab{ padding:12px 20px; border:none; background:transparent; color:var(--muted); border-radius:12px; cursor:pointer; font-weight:600 }
+    .nav-tab.active{ background:var(--gradient); color:#fff; box-shadow:0 0 20px rgba(100,255,218,.15) }
+
+    .tab-content{ display:none } .tab-content.active{ display:block }
+
+    .grid{ display:grid; gap:20px; margin-block:20px }
+    @container (min-width:900px){ .grid.cols-2{ grid-template-columns:1fr 1fr } .grid.cols-3{ grid-template-columns:repeat(3,1fr) } }
+
+    section.card{
+      border:1px solid var(--line); background:var(--card-gradient);
+      border-radius:var(--radius); padding:var(--pad); box-shadow:var(--shadow); position:relative; overflow:hidden;
+    }
+    section.card::before{ content:""; position:absolute; left:0; right:0; top:0; height:4px; background:var(--gradient); opacity:.8 }
+
+    .threat-level{ position:absolute; top:16px; right:16px; padding:6px 12px; border-radius:20px; font-size:.8rem; font-weight:700; text-transform:uppercase; color:#fff }
+    .threat-high{ background:var(--danger) } .threat-medium{ background:var(--warn) } .threat-low{ background:var(--ok) }
+
+    .callout{ border-left:4px solid var(--accent); padding:16px; background:rgba(100,255,218,.05); border-radius:0 12px 12px 0; margin:16px 0 }
+    .entity-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin:8px 0 }
+    .entity-name{ font-weight:700; color:var(--accent); margin-bottom:8px }
+    .entity-type{ font-size:.9rem; color:var(--muted); text-transform:uppercase }
+    .kb-list li{ margin:6px 0; }
+
+    #network-viz{ width:100%; height:560px; border:1px solid var(--line); border-radius:20px; background:var(--card); margin:20px 0; position:relative; overflow:hidden }
+
+    .timeline{ position:relative; padding:20px 0 }
+    .timeline::before{ content:""; position:absolute; left:50%; top:0; bottom:0; width:2px; background:var(--accent); transform:translateX(-50%) }
+    .timeline-event{ position:relative; margin:20px 0; padding:0 30px }
+    .timeline-event:nth-child(odd){ text-align:right; margin-right:50% }
+    .timeline-event:nth-child(even){ text-align:left; margin-left:50% }
+    .timeline-dot{ position:absolute; top:50%; width:16px; height:16px; background:var(--accent); border-radius:50%; transform:translateY(-50%) }
+    .timeline-event:nth-child(odd) .timeline-dot{ right:-8px } .timeline-event:nth-child(even) .timeline-dot{ left:-8px }
+
+    .foot{ color:var(--muted); font-size:.9rem }
+    .kbd{ font:600 .85rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; border:1px solid var(--line); border-radius:6px; padding:3px 8px; background:var(--card); color:var(--accent) }
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+
+    @media print{
+      .toolbar,.hide-print,.nav-tabs{ display:none!important }
+      body{ background:#fff; color:#000 }
+      header.site,section.card{ box-shadow:none }
+      a{ color:#000; text-decoration:underline }
+      .tab-content{ display:block!important }
+    }
+    ::view-transition-group(root){ animation-duration:.3s }
+    @media (prefers-reduced-motion: reduce){ *{ animation:none!important; transition:none!important; scroll-behavior:auto!important } }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="site" role="banner" aria-labelledby="title">
+      <div class="toolbar">
+        <div class="left">
+          <span class="tag" aria-label="Country tag">🇨🇳 中国（简体）</span>
+          <span class="tag">信号权力分析</span>
+          <span class="tag" style="border-color:var(--danger);color:var(--danger)">区域/全球外溢</span>
+        </div>
+        <div class="right">
+          <button id="lang-toggle" class="btn" aria-label="切换至繁體中文">繁體中文</button>
+          <noscript><a class="btn" href="./traditional/">繁體中文</a></noscript>
+          <button id="theme" aria-pressed="false" aria-label="切换主题"><span class="kbd">T</span> 主题</button>
+          <button id="search-toggle" aria-label="搜索"><span class="kbd">/</span> 搜索</button>
+          <button id="print" class="hide-print" aria-label="打印档案"><span class="kbd">⌘/Ctrl+P</span> 打印</button>
+        </div>
+      </div>
+      <h1 id="title">信号权力控制网络</h1>
+      <p>电信控制、商业数据流与平台治理共同构成影响生态，易被滥用。本档案识别结构性压力点与可执行的透明度与减害杠杆，便于在危机中迅速落地。</p>
+
+      <div class="grid cols-3" aria-hidden="true">
+        <div class="entity-card" style="text-align:center">
+          <div style="font-size:2rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">52+</div>
+          <div class="foot">映射实体（监管机关、运营商、数据经纪、平台）</div>
+        </div>
+        <div class="entity-card" style="text-align:center">
+          <div style="font-size:2rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">160+</div>
+          <div class="foot">记录连接（项目、法律抓手、技术流）</div>
+        </div>
+        <div class="entity-card" style="text-align:center">
+          <div style="font-size:2rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">2010–2025</div>
+          <div class="foot">时间轴（骨干整合 → 平台治理 → 数据出海）</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 语言建议（可选，JS 控制显示） -->
+    <div id="lang-suggest" role="region" aria-live="polite" style="display:none; margin:12px 0">
+      <section class="card" style="padding:12px">
+        <p style="margin:0">
+          偵測到您的偏好可能為 <strong>繁體中文</strong>。要前往繁體版嗎？
+          <button id="go-hant" class="btn" style="margin-left:8px">前往繁體</button>
+          <button id="dismiss-hint" class="btn" style="margin-left:6px">保留简体</button>
+        </p>
+      </section>
+    </div>
+
+    <!-- 搜索 -->
+    <div class="hide-print" id="search-container" style="display:none; margin-top:16px">
+      <label class="sr-only" for="search-input">搜索</label>
+      <input id="search-input" class="search-input" placeholder="搜索实体、连接或威胁…" autocomplete="off"
+             style="width:100%;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--fg)">
+      <div id="search-results" style="margin-top:16px"></div>
+    </div>
+
+    <!-- 选项卡 -->
+    <nav class="nav-tabs hide-print" role="tablist" aria-label="章节">
+      <button class="nav-tab active" data-tab="threats" role="tab" aria-selected="true" aria-controls="threats">威胁分析</button>
+      <button class="nav-tab" data-tab="network" role="tab" aria-selected="false" aria-controls="network">网络地图</button>
+      <button class="nav-tab" data-tab="timeline" role="tab" aria-selected="false" aria-controls="timeline">时间线</button>
+      <button class="nav-tab" data-tab="actions" role="tab" aria-selected="false" aria-controls="actions">行动清单</button>
+    </nav>
+
+    <!-- 威胁分析 -->
+    <div class="tab-content active" id="threats" role="tabpanel" tabindex="0" aria-labelledby="威胁分析">
+      <section class="card" aria-labelledby="s1">
+        <div class="threat-level threat-high">严重</div>
+        <h2 id="s1">🎯 电信垂直控制：监管机关 → 运营商 → 交换枢纽</h2>
+        <p class="callout">国家级网关与IXP集中化，结合深度包检测（DPI）与合规接口，使封锁、限速与内容筛选在全国范围可快速执行；紧急状态下路由优先级可倾向官方通道。</p>
+        <div class="grid cols-2">
+          <div class="entity-card">
+            <div class="entity-name">国家网关 / 互联网交换点（IXP）</div>
+            <div class="entity-type">骨干/控制点</div>
+            <div><strong>风险：</strong> 单点失效；元数据可视性；对商业与人道通信的连带影响；跨省同步执行。</div>
+          </div>
+          <div class="entity-card">
+            <div class="entity-name">基础电信运营商</div>
+            <div class="entity-type">接入与路由</div>
+            <div><strong>风险：</strong> 合规接口的扩张性接入；按地区分层限速/封锁；SIM/IMEI 名单化；专线与云骨干的策略重定向。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="s2">
+        <div class="threat-level threat-high">严重</div>
+        <h2 id="s2">📡 信令薄弱（SS7/Diameter）与跨境漫游压力</h2>
+        <p>信令遗留协议仍可能实现定位与短信拦截；跨境互联与卫星/海缆回程扩大滥用面。对人道走廊、媒体与公民组织的暴露风险显著。</p>
+        <div class="entity-card">
+          <div class="entity-name">互联/漫游边界</div>
+          <div class="entity-type">跨境链路</div>
+          <div><strong>所需：</strong> 信令防火墙、异常检测、漫游边界过滤、独立测试与（适度编辑的）季度事件统计。</div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="s3">
+        <div class="threat-level threat-medium">中度</div>
+        <h2 id="s3">📱 IMSI 捕获与战术周界</h2>
+        <p>大型集会与口岸周界易遭设备标识抓取；无关旁观者设备可能被卷入采集，且缺乏透明的清除与申诉路径。</p>
+        <div class="entity-card">
+          <div class="entity-name">战术单元</div>
+          <div class="entity-type">SIGINT/现场</div>
+          <div><strong>最低保障：</strong> 任务范围过滤；非目标数据强制清除；后评估提交给独立观察主体。</div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="s4">
+        <div class="threat-level threat-high">严重</div>
+        <h2 id="s4">🗂️ 数据经纪链条与 SDK 遥测</h2>
+        <p>应用遥测、广告画像与零售数据可被用于去匿名、群体画像与路径推断；经由聚合商与转售商的再分发，使敏感场景（医院、学校、宗教场所、庇护点、抗议）暴露。</p>
+        <div class="grid cols-2">
+          <div class="entity-card">
+            <div class="entity-name">SDK 与 App 遥测</div>
+            <div class="entity-type">商业数据源</div>
+            <div><strong>风险：</strong> 高精度地理轨迹；标识符绑定；与线下交易数据联结。</div>
+          </div>
+          <div class="entity-card">
+            <div class="entity-name">聚合商/转售链</div>
+            <div class="entity-type">再分发</div>
+            <div><strong>需要：</strong> 经纪人名录；政府采购日志；敏感地点禁售；删除审计与罚则。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="s5">
+        <div class="threat-level threat-high">严重</div>
+        <h2 id="s5">📺 平台治理与叙事操作</h2>
+        <p>跨平台的协调网络与“叙事洗白”机制扭曲公共讨论；不透明排名、有限研究者访问与法律请求的不对称披露降低社会监督力。</p>
+        <div class="entity-card">
+          <div class="entity-name">大型平台（境内/全球）</div>
+          <div class="entity-type">信息基础设施</div>
+          <div><strong>需要：</strong> 政治广告库；法律请求登记；危机透明窗口；申诉与数据可携。</div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="s6">
+        <div class="threat-level threat-low">保障/机构</div>
+        <h2 id="s6">⚖️ 制衡锚点（国内/跨境）</h2>
+        <p>在信息披露受限环境中，跨境监管协作、独立测试机构与 CERT/ISAC 联盟是关键外部平衡力；面向人道通信的最低保障尤为重要。</p>
+        <div class="grid cols-2">
+          <div class="entity-card">
+            <div class="entity-name">电信/互联网监管协作</div>
+            <div class="entity-type">互联与漫游</div>
+            <div>推动信令防护，建立互联事件报告标准；对跨境漫游进行异常筛查。</div>
+          </div>
+          <div class="entity-card">
+            <div class="entity-name">CERT/ISAC 联盟</div>
+            <div class="entity-type">网络防御</div>
+            <div>共享指标；为人道通信提供加固建议；发布编辑后的态势通报。</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 网络地图 -->
+    <div class="tab-content" id="network" role="tabpanel" tabindex="0" aria-labelledby="网络地图">
+      <section class="card">
+        <h2>🕸️ 控制与影响网络（概念示意）</h2>
+        <p>拖拽节点，探索监管机关、运营商、经纪链、平台与项目之间的关系。省略操作细节，侧重结构理解与治理杠杆定位。</p>
+        <div id="network-viz" role="img" aria-label="实体与连接的交互式网络图"></div>
+        <div class="foot">
+          <strong>图例：</strong>
+          <span style="color:var(--danger)">● 监管/执法</span>
+          <span style="color:var(--warn)">● 运营商/设备商</span>
+          <span style="color:var(--accent)">● 数据经纪</span>
+          <span style="color:var(--ok)">● 平台</span>
+          <span style="color:#3d5afe">● 互联/项目</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>🔗 关键关系（中国）</h2>
+        <div class="grid">
+          <details>
+            <summary>国家网关/IXP ↔ 指令/规范 ↔ 运营商</summary>
+            <p><strong>要点：</strong> 中枢点实现全国级封锁/限速；需公共日志、独立审查与人道例外通道。</p>
+          </details>
+          <details>
+            <summary>跨境漫游/互联 ↔ 信令滥用</summary>
+            <p><strong>要点：</strong> SS7/Diameter 防护；第三方测试；（编辑后）事件统计，便于公众稽核。</p>
+          </details>
+          <details>
+            <summary>SDK 遥测 ↔ 经纪链 ↔ 定向打击</summary>
+            <p><strong>流程：</strong> App 数据 → 聚合 → 再售；对策为禁售敏感地点、政府采购日志与删除审计。</p>
+          </details>
+          <details>
+            <summary>平台 ↔ 协调/放大机制</summary>
+            <p><strong>要点：</strong> 政治广告库；国家关联操作披露；研究访问窗口与危机透明报告。</p>
+          </details>
+        </div>
+      </section>
+    </div>
+
+    <!-- 时间线 -->
+    <div class="tab-content" id="timeline" role="tabpanel" tabindex="0" aria-labelledby="时间线">
+      <section class="card">
+        <h2>📅 信号权力演进时间线（中国）</h2>
+        <div class="timeline">
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2010–2015：骨干整合与合规模型</h3>
+            <p>运营商合规接口与DPI能力形成规模；交换与网关集中度提高，技术与制度同步推进。</p>
+          </div>
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2016–2019：平台治理与跨境延伸</h3>
+            <p>平台内容治理常态化；跨境互联、漫游与云基础设施纳入更严密的策略控制。</p>
+          </div>
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2020–2023：数据经纪与出海</h3>
+            <p>SDK/广告画像与零售数据整合；经纪链条与再分发增强，敏感人群暴露风险增加。</p>
+          </div>
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2024–2025：信令/互联安全外溢</h3>
+            <p>跨境信令防护与互联事件报告成为区域焦点；对人道通信的加固与例外机制被强调。</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 行动清单 -->
+    <div class="tab-content" id="actions" role="tabpanel" tabindex="0" aria-labelledby="行动清单">
+      <section class="card" aria-labelledby="levers">
+        <h2 id="levers">⚡ 立即措施（区域/跨境适配）</h2>
+        <p class="callout">当国内透明度受限时，依托互联政策、跨境标准与平台义务来保护生命与事实；优先保障人道通信与公众监督。</p>
+        <div class="grid">
+          <details open><summary>📡 互联与漫游防护</summary>
+            <ol>
+              <li>在互联边界部署 SS7/Diameter 防火墙与异常检测；对漫游边界进行过滤。</li>
+              <li>独立第三方年度测试，发布（适度编辑的）公开摘要与整改日志。</li>
+            </ol>
+          </details>
+          <details><summary>🕯️ 断网/限速透明 & 人道豁免</summary>
+            <ol>
+              <li>建立公共登记：发布指令来源、时间、范围与法律依据；为医院、庇护所与人道通道保留连通性。</li>
+              <li>指令时效不超过72小时，需强制独立复核方可续期。</li>
+            </ol>
+          </details>
+          <details><summary>🗂️ 数据经纪禁售与审计</summary>
+            <ol>
+              <li>禁止销售敏感地点数据（医院、学校、宗教场所、庇护所、抗议）。</li>
+              <li>政府采购须经法院/等效监督；建立公开采购日志与删除审计；设定罚则与市场禁入。</li>
+            </ol>
+          </details>
+          <details><summary>📱 IMSI 捕获治理</summary>
+            <ol>
+              <li>令状/等效授权；任务范围过滤；非目标数据清除证明；按省份发布（编辑后）月度统计。</li>
+            </ol>
+          </details>
+          <details><summary>📺 平台透明度与研究者窗口</summary>
+            <ol>
+              <li>政治广告库；法律请求登记；危机透明报告；开放研究者访问窗口。</li>
+              <li>申诉与数据可携；对记者与人权捍卫者的账户保护。</li>
+            </ol>
+          </details>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="generator">
+        <h2 id="generator">📋 实施工具箱（模型跨境政策文本）</h2>
+        <p class="foot">可就地编辑；支持复制/下载。面向监管、运营商、平台与人道协作方。</p>
+<textarea id="pledge" aria-label="模型文本（中国）" style="width:100%;min-height:360px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
+信号权力滥用防范框架（中国 — 区域/跨境）
+
+一、互联与漫游边界
+(a) 在互联与漫游边界部署 SS7/Diameter 防火墙与过滤；
+(b) 每年由独立机构测试并公开（编辑后）摘要；
+(c) 季度发布事件统计（时间/向量/整改）。
+
+二、断网与限速治理
+(a) 24小时内公开登记：指令来源、时间、范围、法律依据；
+(b) 人道豁免：医院、庇护所、人道走廊维持最低连通；
+(c) 指令72小时自动失效，续期需独立复核。
+
+三、数据经纪与商业数据
+(a) 对敏感地点数据实施禁售；
+(b) 政府采购受法院/等效监督，建立公开采购日志；
+(c) 强制删除审计；违规罚则与禁入。
+
+四、IMSI 捕获与战术 SIGINT
+(a) 令状/等效程序；任务范围过滤；
+(b) 非目标数据清除证明；按省份发布（编辑后）月度统计。
+
+五、平台治理与研究访问
+(a) 政治广告库与法律请求日志；
+(b) 危机透明报告与研究者访问窗口；
+(c) 申诉/数据可携；记者与人权捍卫者保护。
+
+执行与问责
+(a) 独立审计与复查；
+(b) 对重复违规的承包商实施禁入；
+(c) 对严重滥用采取协调制裁。
+
+生效日期：[填写日期]
+</textarea>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button id="copy" class="btn">📋 复制</button>
+          <button id="download" class="btn">📥 下载</button>
+          <button id="customize" class="btn">⚙️ 重置</button>
+        </div>
+      </section>
+    </div>
+
+    <footer class="foot" role="contentinfo" style="margin-block:32px">
+      <p><strong>Signal-Power Dossier v2.4（中国/简体）</strong> — 离线、键盘可用、打印友好。快捷键：<span class="kbd">T</span> 主题，<span class="kbd">/</span> 搜索，<span class="kbd">⌘/Ctrl+P</span> 打印。</p>
+    </footer>
+  </main>
+
+  <script>
+    // View Transitions (if supported)
+    const runVT = ('startViewTransition' in document);
+    const root = document.documentElement;
+
+    // ===== Language toggle → nested /traditional/ =====
+    const langBtn = document.getElementById('lang-toggle');
+    langBtn?.addEventListener('click', ()=>{
+      try { localStorage.setItem('pra-lang-preference','zh-Hant'); } catch {}
+      location.href = './traditional/';
+    });
+
+    // Gentle auto-suggest for Traditional (no auto-redirect)
+    (function(){
+      const pref = (()=>{ try { return localStorage.getItem('pra-lang-preference'); } catch { return null; } })();
+      const ua = navigator.languages || [navigator.language || ''];
+      const prefersHant = ua.some(l => /-(HK|MO|TW)|zh-Hant/i.test(l));
+      if (!pref && prefersHant) {
+        const box = document.getElementById('lang-suggest');
+        const go = document.getElementById('go-hant');
+        const dismiss = document.getElementById('dismiss-hint');
+        if (box && go && dismiss) {
+          box.style.display = 'block';
+          go.addEventListener('click', ()=>{
+            try { localStorage.setItem('pra-lang-preference','zh-Hant'); } catch {}
+            location.href = './traditional/';
+          });
+          dismiss.addEventListener('click', ()=>{
+            try { localStorage.setItem('pra-lang-preference','zh-Hans'); } catch {}
+            box.remove();
+          });
+        }
+      }
+    })();
+
+    // ===== Theme cycle: system → light → dark → system =====
+    const themeBtn = document.getElementById('theme');
+    const cycle = {system:'light', light:'dark', dark:'system'};
+    function setTheme(next){
+      const apply = ()=> root.setAttribute('data-theme', next);
+      runVT ? document.startViewTransition(apply) : apply();
+      localStorage.setItem('theme', next);
+      themeBtn.setAttribute('aria-pressed', String(next!=='system'));
+    }
+    setTheme(localStorage.getItem('theme') || 'system');
+    themeBtn.addEventListener('click', ()=> setTheme(cycle[root.getAttribute('data-theme')]));
+
+    // ===== Print =====
+    document.getElementById('print').addEventListener('click', ()=> window.print());
+
+    // ===== Search toggle & '/' =====
+    const searchToggle = document.getElementById('search-toggle');
+    const searchContainer = document.getElementById('search-container');
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    searchToggle.addEventListener('click', ()=>{
+      const hidden = searchContainer.style.display === 'none';
+      searchContainer.style.display = hidden ? 'block' : 'none';
+      if (hidden) searchInput.focus();
+    });
+    document.addEventListener('keydown', (e)=>{
+      if(e.key==='/' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName!=='INPUT'){
+        e.preventDefault(); searchContainer.style.display='block'; searchInput.focus();
+      }
+    });
+    searchInput?.addEventListener('input', ()=>{
+      const q = searchInput.value.trim().toLowerCase();
+      if(!q){ searchResults.innerHTML=''; return; }
+      const hits = [...document.querySelectorAll('h2,.entity-name')].filter(el => el.textContent.toLowerCase().includes(q));
+      searchResults.innerHTML = hits.slice(0,24).map(h=>{
+        const id = h.id || h.closest('section')?.id || '';
+        return `<div><a href="#${id}" onclick="document.getElementById('${id}')?.scrollIntoView({behavior:'smooth'});">${h.textContent}</a></div>`;
+      }).join('') || '<div class="foot">无匹配项。</div>';
+    });
+
+    // ===== Tabs & deep-link =====
+    const tabButtons = document.querySelectorAll('.nav-tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    function activateTab(id){
+      tabButtons.forEach(b=>{
+        const on = b.dataset.tab===id; b.classList.toggle('active', on); b.setAttribute('aria-selected', String(on));
+      });
+      tabContents.forEach(c=> c.classList.toggle('active', c.id===id));
+      if(id==='network') initNetworkViz();
+    }
+    tabButtons.forEach(btn=> btn.addEventListener('click', ()=> activateTab(btn.dataset.tab)));
+    if(location.hash){
+      const target = location.hash.replace('#','');
+      if(document.getElementById(target)?.classList.contains('tab-content')) activateTab(target);
+    }
+
+    // ===== Tiny SVG network (draggable) =====
+    let networkInit=false;
+    function initNetworkViz(){
+      if(networkInit) return; networkInit=true;
+      const container = document.getElementById('network-viz');
+      const w = container.clientWidth, h = container.clientHeight;
+      const NS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(NS,'svg'); svg.setAttribute('width',w); svg.setAttribute('height',h); container.appendChild(svg);
+
+      const nodes = [
+        {id:'监管/执法',type:'authority',x:w*.20,y:h*.28},
+        {id:'国家网关/IXP',type:'authority',x:w*.32,y:h*.44},
+        {id:'运营商/设备商',type:'vendor',x:w*.82,y:h*.24},
+        {id:'互联/漫游',type:'telecom',x:w*.52,y:h*.60},
+        {id:'CERT/ISAC',type:'program',x:w*.62,y:h*.74},
+        {id:'数据经纪链',type:'broker',x:w*.82,y:h*.78},
+        {id:'平台',type:'platform',x:w*.50,y:h*.20},
+        {id:'IMSI/战术',type:'vendor',x:w*.90,y:h*.42},
+        {id:'人道/媒体',type:'program',x:w*.45,y:h*.86}
+      ];
+      const links = [
+        {s:'监管/执法',t:'运营商/设备商',w:2},
+        {s:'监管/执法',t:'IMSI/战术',w:2},
+        {s:'互联/漫游',t:'CERT/ISAC',w:2},
+        {s:'数据经纪链',t:'平台',w:2},
+        {s:'国家网关/IXP',t:'监管/执法',w:2},
+        {s:'人道/媒体',t:'CERT/ISAC',w:2}
+      ];
+
+      const color=(t)=>{
+        const s=getComputedStyle(document.body);
+        if(t==='authority') return s.getPropertyValue('--danger').trim();
+        if(t==='vendor') return s.getPropertyValue('--warn').trim();
+        if(t==='broker') return s.getPropertyValue('--accent').trim();
+        if(t==='platform') return s.getPropertyValue('--ok').trim();
+        return '#3d5afe'; // telecom/program
+      };
+
+      const lines=links.map(L=>{
+        const el=document.createElementNS(NS,'line');
+        el.setAttribute('stroke', getComputedStyle(document.body).getPropertyValue('--accent').trim());
+        el.setAttribute('stroke-width', String(1.5*L.w));
+        el.setAttribute('stroke-opacity','.6');
+        svg.appendChild(el); return {L,el};
+      });
+
+      const groups=nodes.map(N=>{
+        const g=document.createElementNS(NS,'g');
+        const c=document.createElementNS(NS,'circle'); c.setAttribute('r','24'); c.setAttribute('fill',color(N.type)); c.setAttribute('stroke','#fff'); c.setAttribute('stroke-width','2.5');
+        const t=document.createElementNS(NS,'text'); t.setAttribute('fill','#fff'); t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','11'); t.setAttribute('dy','.35em'); t.textContent=N.id;
+        g.appendChild(c); g.appendChild(t); svg.appendChild(g);
+
+        let drag=false, ox=0, oy=0;
+        g.addEventListener('pointerdown',e=>{drag=true;ox=e.clientX-N.x;oy=e.clientY-N.y;g.setPointerCapture(e.pointerId)});
+        g.addEventListener('pointermove',e=>{ if(!drag) return; N.x=e.clientX-ox; N.y=e.clientY-oy; tick(); });
+        g.addEventListener('pointerup',()=>drag=false);
+        g.addEventListener('pointercancel',()=>drag=false);
+        return {N,g};
+      });
+
+      function tick(){
+        lines.forEach(({L,el})=>{
+          const a=nodes.find(n=>n.id===L.s), b=nodes.find(n=>n.id===L.t);
+          el.setAttribute('x1',a.x); el.setAttribute('y1',a.y);
+          el.setAttribute('x2',b.x); el.setAttribute('y2',b.y);
+        });
+        groups.forEach(({N,g})=> g.setAttribute('transform',`translate(${N.x},${N.y})`));
+      }
+      tick();
+
+      // quick settle layout
+      let steps=80; (function anim(){
+        if(!steps--) return;
+        links.forEach(L=>{
+          const a=nodes.find(n=>n.id===L.s), b=nodes.find(n=>n.id===L.t);
+          const dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy)||1, target=150, k=(d-target)*.02;
+          a.x+=dx/d*k; a.y+=dy/d*k; b.x-=dx/d*k; b.y-=dy/d*k;
+        });
+        tick(); requestAnimationFrame(anim);
+      })();
+
+      new ResizeObserver(r=>{
+        const cr=r[0].contentRect; svg.setAttribute('width',cr.width); svg.setAttribute('height',cr.height); tick();
+      }).observe(container);
+    }
+
+    // ===== Text tools (copy/download/reset) =====
+    const pledge = document.getElementById('pledge');
+    const copyBtn = document.getElementById('copy');
+    const dlBtn = document.getElementById('download');
+    const resetBtn = document.getElementById('customize');
+    const defaultText = pledge?.value;
+
+    copyBtn?.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(pledge.value);
+        const o=copyBtn.textContent; copyBtn.textContent='✅ 已复制'; setTimeout(()=>copyBtn.textContent=o,1200);
+      }catch{ alert('复制失败，请手动选择复制。'); }
+    });
+    dlBtn?.addEventListener('click', ()=>{
+      const blob=new Blob([pledge.value],{type:'text/plain'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='signal_power_resolution_CN.txt';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+    });
+    resetBtn?.addEventListener('click', ()=> pledge.value=defaultText);
+
+    // ===== Service Worker registration (optional; add sw.js next) =====
+    // if ('serviceWorker' in navigator) {
+    //   window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(()=>{}));
+    // }
+  </script>
+</body>
+</html>

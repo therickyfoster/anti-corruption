@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Canada Governance Competency Audit — Offline Assessment UI</title>
+<meta name="description" content="Interactive, offline-first assessment of Government of Canada competency across transparency, health, environment, elections, budgets, FOI, AI governance, and more." />
+<style>
+  :root{
+    --bg:#0a0b0f; --panel:#0f1220; --muted:#8b94a7; --text:#eaf1ff; --accent:#7dd3fc;
+    --accent2:#a78bfa; --good:#22c55e; --warn:#f59e0b; --bad:#ef4444; --grid:#1b2236;
+    --card:#121629; --chip:#20253b; --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+    color:var(--text); background: radial-gradient(1200px 800px at 10% -10%, #1e1f2a 10%, #0c0f1a 50%, #05060a 100%), var(--bg);
+  }
+  header{
+    position:sticky; top:0; z-index:30; backdrop-filter: blur(10px);
+    background: linear-gradient(to right, rgba(15,18,32,.85), rgba(12,15,26,.65));
+    border-bottom:1px solid #1e253a;
+  }
+  .wrap{max-width:1200px; margin:0 auto; padding:18px 20px}
+  h1{margin:0; font-size: clamp(22px, 2.6vw, 36px); letter-spacing:.2px}
+  .subtitle{color:var(--muted); font-size:14px}
+  .bar{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px
+  }
+  .btn{
+    appearance:none; border:1px solid #2b3553; background:linear-gradient(180deg,#1c2440,#141a33);
+    color:var(--text); padding:10px 14px; border-radius:12px; cursor:pointer; transition:.2s transform, .2s background;
+    box-shadow: var(--shadow);
+  }
+  .btn:hover{transform:translateY(-1px); background:linear-gradient(180deg,#243059,#161b35)}
+  .btn.ghost{background:transparent}
+  .btn.primary{border-color:#2563eb; background:linear-gradient(180deg,#2b3ea8,#1b2369)}
+  .grid{
+    display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+    margin:20px auto;
+  }
+  .card{
+    background:linear-gradient(180deg,#12172a,#0d1121); border:1px solid #1f2741; border-radius:16px; padding:16px; box-shadow: var(--shadow);
+  }
+  .card h3{margin:0 0 8px 0}
+  .muted{color:var(--muted); font-size:13px}
+  .kpi{display:flex; align-items:center; justify-content:space-between; margin:10px 0 6px}
+  .score{
+    font-weight:700; font-size:20px; padding:4px 10px; border-radius:10px; background:var(--chip); border:1px solid #2b3553;
+  }
+  .chip{display:inline-block; padding:6px 10px; background:var(--chip); border:1px solid #2b3553; border-radius:999px; font-size:12px}
+  .field{display:flex; flex-direction:column; gap:6px; margin:8px 0}
+  .field label{font-size:13px; color:#b8c2da}
+  .field input,.field textarea, .field select{
+    background:#0b0f1e; color:var(--text); border:1px solid #223058; border-radius:10px; padding:10px; outline:none;
+  }
+  .pillbar{
+    display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 0;
+  }
+  .pillbar .pill{cursor:pointer; padding:6px 10px; border-radius:999px; border:1px solid #2b3553; background: #0f1429; font-size:12px}
+  .pill.active{outline:2px solid var(--accent); background:#0d1a2b}
+  .meter{
+    height:12px; border-radius:999px; background:#0b0f1e; border:1px solid #223058; overflow:hidden; position:relative;
+  }
+  .meter > i{display:block; height:100%; background: linear-gradient(90deg, #ef4444, #f59e0b 50%, #22c55e); width:0%}
+  .legend{display:flex; gap:8px; align-items:center; font-size:12px; color:var(--muted)}
+  .legend i{width:10px; height:10px; border-radius:3px; display:inline-block}
+  .legend .l-bad{background:#ef4444}.legend .l-warn{background:#f59e0b}.legend .l-good{background:#22c55e}
+  .spark{
+    width:100%; height:50px; background: conic-gradient(from 180deg, #18203a, #18203a 70%, #2a365f);
+    border:1px solid #223058; border-radius:12px; position:relative; overflow:hidden;
+  }
+  .spark svg{position:absolute; inset:0}
+  .footnote{font-size:11px; color:#9aa6c6}
+  .notice{
+    padding:10px 12px; border-radius:12px; background:#0a1224; border:1px dashed #2b3553; color:#b7c6ee; font-size:12px
+  }
+  .status{
+    display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:12px; border:1px solid #2b3553; background:#0f1429; font-size:13px
+  }
+  .status.good{border-color:#14532d; background:#0d1f12}
+  .status.warn{border-color:#7a520a; background:#1a1408}
+  .status.bad{border-color:#4f0e10; background:#1a0c0d}
+  details{border:1px solid #1f2741; background:#0b0f1e; border-radius:12px; padding:10px 12px}
+  details summary{cursor:pointer; color:#cdd8f6}
+  .flex{display:flex; gap:12px; flex-wrap:wrap}
+  .right{margin-left:auto}
+  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size:12px}
+  /* Print */
+  @media print{
+    header, .noprint{display:none !important}
+    body{background:white; color:black}
+    .card, details{break-inside: avoid}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Canada Governance Competency Audit</h1>
+    <div class="subtitle">Offline assessment console for transparency, integrity, and service delivery — data remains local to your device.</div>
+    <div class="bar noprint">
+      <button class="btn primary" id="saveBtn">Save to Browser</button>
+      <button class="btn" id="exportBtn">Export JSON</button>
+      <label class="btn ghost" for="importFile">Import JSON<input id="importFile" type="file" accept="application/json" style="display:none"></label>
+      <button class="btn" id="resetBtn">Reset</button>
+      <button class="btn right" onclick="window.print()">Print / PDF</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <div class="kpi">
+      <h3>Overall Competency Index</h3>
+      <div class="score" id="overallScore">—</div>
+    </div>
+    <div class="meter"><i id="overallMeter"></i></div>
+    <div class="legend" style="margin-top:8px">
+      <span><i class="l-bad"></i>Low</span><span><i class="l-warn"></i>Medium</span><span><i class="l-good"></i>High</span>
+    </div>
+    <p class="muted" style="margin-top:10px">
+      This dashboard scores the Government of Canada across selected domains. Each domain is scored 0–100 with evidence links. Missing evidence increases the Red Flag count.
+    </p>
+    <div class="pillbar noprint" id="quickFilters"></div>
+  </section>
+
+  <!-- CATEGORY GRID -->
+  <section class="grid" id="categories"></section>
+
+  <!-- EVIDENCE TABLE -->
+  <section class="card">
+    <h3>Evidence Register</h3>
+    <p class="muted">Add publicly available sources (official reports, datasets, audits, court rulings, commission findings). The UI auto-detects missing/invalid URLs.</p>
+    <div class="field flex">
+      <input id="evTitle" placeholder="Title (e.g., Auditor General Report 2024 Q3)" />
+      <input id="evURL" placeholder="URL (https://…)" />
+      <select id="evCat">
+        <option value="">Category (optional)</option>
+      </select>
+      <button class="btn" id="addEv">Add</button>
+    </div>
+    <div id="evList"></div>
+    <div class="footnote">Note: All entries stay local (no network actions performed by this page).</div>
+  </section>
+
+  <!-- AUTO FLAGS -->
+  <section class="card">
+    <h3>Auto Red Flags</h3>
+    <p class="muted">Computed from missing evidence, low scores, and stale updates. Adjust domain thresholds as needed.</p>
+    <div id="flagsWrap" class="grid"></div>
+  </section>
+
+  <!-- TEMPLATE & NOTES -->
+  <section class="grid">
+    <div class="card">
+      <h3>Methodology</h3>
+      <details open>
+        <summary>Scoring rubric (concise)</summary>
+        <ul class="muted">
+          <li><b>90–100</b>: Best practice, transparent, timely, independently verified.</li>
+          <li><b>70–89</b>: Generally competent, minor gaps, remediation underway.</li>
+          <li><b>40–69</b>: Material weaknesses, inconsistent transparency, slow remediation.</li>
+          <li><b>0–39</b>: Systemic failure, persistent opacity, evidence of harm or noncompliance.</li>
+        </ul>
+      </details>
+      <details style="margin-top:8px">
+        <summary>Recommended evidence types</summary>
+        <ul class="muted">
+          <li>Auditor General reports, Parliamentary Budget Officer analyses</li>
+          <li>Elections Canada post-event evaluations, court rulings</li>
+          <li>Health Canada/PHAC transparency logs, MAiD oversight reports</li>
+          <li>Environment Canada monitoring datasets (air/water/fire)</li>
+          <li>Access to Information (ATIP) timeliness dashboards</li>
+        </ul>
+      </details>
+      <div class="notice" style="margin-top:10px">
+        This tool is neutral: you decide scores and attach sources. It merely calculates and visualizes.
+      </div>
+    </div>
+    <div class="card">
+      <h3>Analyst Notes</h3>
+      <div class="field">
+        <label for="notes">Context, caveats, or summaries for the public record:</label>
+        <textarea id="notes" rows="10" placeholder="Write your synthesis here…"></textarea>
+      </div>
+      <div class="status" id="freshnessTag"><span>Freshness: Unknown</span></div>
+      <p class="footnote">Freshness updates when you modify any score/evidence (timestamped locally).</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Mini Trendline (Composite)</h3>
+    <div id="sparkWrap" class="spark">
+      <svg viewBox="0 0 100 20" preserveAspectRatio="none">
+        <polyline id="sparkLine" fill="none" stroke="#7dd3fc" stroke-width="1.5" points="0,10 100,10"></polyline>
+      </svg>
+    </div>
+    <p class="footnote">Trend is built from your saved sessions (last 20 overall scores).</p>
+  </section>
+
+  <footer style="margin:30px 0 60px" class="muted">
+    <div>© Planetary Restoration Archive — Zero Harm • Offline audit interface. No telemetry, no cookies.</div>
+    <div class="mono">Build: CGCA-1.0 | Press <kbd>?</kbd> for shortcuts • Dark/Light: <span id="modeState">Dark</span></div>
+  </footer>
+</main>
+
+<!-- Keyboard Shortcuts Modal -->
+<dialog id="kbd" class="card" style="max-width:640px; border:none">
+  <h3>Keyboard Shortcuts</h3>
+  <ul class="muted">
+    <li><b>S</b> — Save to Browser</li>
+    <li><b>E</b> — Export JSON</li>
+    <li><b>I</b> — Import JSON</li>
+    <li><b>P</b> — Print/PDF</li>
+    <li><b>D</b> — Toggle Dark/Light</li>
+  </ul>
+  <form method="dialog" class="noprint"><button class="btn" style="margin-top:10px">Close</button></form>
+</dialog>
+
+<script>
+/* ======= Data Model ======= */
+const DOM = sel => document.querySelector(sel);
+const CATS = [
+  {key:'elections', name:'Elections Integrity', hint:'Security, auditability, dispute resolution, accessibility.'},
+  {key:'health', name:'Public Health Transparency', hint:'Disclosures, data timeliness, MAiD oversight, conflict-of-interest.'},
+  {key:'environment', name:'Environmental Monitoring', hint:'Air/water/fire data quality, transparency, early warning.'},
+  {key:'budget', name:'Budget & Procurement', hint:'PBO alignment, value-for-money, anti-corruption controls.'},
+  {key:'foi', name:'FOI/ATIP Performance', hint:'Backlog, timeliness, redaction discipline, independent review.'},
+  {key:'safety', name:'Civil Safety & Emergency', hint:'Preparedness, wildfire response, evacuation efficacy, comms.'},
+  {key:'digital', name:'Digital & AI Governance', hint:'Responsible AI, data protection, algorithmic accountability.'},
+  {key:'justice', name:'Justice & Rights', hint:'Charter compliance, remedy access, due process, oversight.'}
+];
+
+let state = {
+  scores:{}, evidence:[], notes:'', updatedAt:null, history:[]
+};
+
+// Initialize defaults
+CATS.forEach(c => { state.scores[c.key] = {score: null, evidenceCount:0, staleDays: null, comment:''}; });
+
+/* ======= UI Build ======= */
+function buildQuickFilters(){
+  const bar = DOM('#quickFilters'); bar.innerHTML='';
+  CATS.forEach(c=>{
+    const pill=document.createElement('div');
+    pill.className='pill'; pill.textContent=c.name;
+    pill.onclick=()=>document.getElementById('card-'+c.key).scrollIntoView({behavior:'smooth', block:'center'});
+    bar.appendChild(pill);
+  });
+}
+function buildCategories(){
+  const grid = DOM('#categories'); grid.innerHTML='';
+  CATS.forEach(c=>{
+    const div=document.createElement('div'); div.className='card'; div.id='card-'+c.key;
+    div.innerHTML=`
+      <div class="kpi">
+        <h3>${c.name}</h3>
+        <div class="score" id="score-${c.key}">—</div>
+      </div>
+      <div class="meter"><i id="meter-${c.key}"></i></div>
+      <p class="muted">${c.hint}</p>
+      <div class="field">
+        <label for="input-${c.key}">Score (0–100)</label>
+        <input type="number" id="input-${c.key}" min="0" max="100" placeholder="Enter score">
+      </div>
+      <div class="field">
+        <label for="comment-${c.key}">Comment</label>
+        <textarea id="comment-${c.key}" rows="3" placeholder="Notes, rationale, caveats…"></textarea>
+      </div>
+      <div class="pillbar">
+        <span class="chip">Evidence: <span id="evcount-${c.key}">0</span></span>
+        <span class="chip">Stale Days: <span id="stale-${c.key}">—</span></span>
+      </div>
+    `;
+    grid.appendChild(div);
+    // bindings
+    div.querySelector('#input-'+c.key).addEventListener('input', e=>{
+      const v = clampScore(e.target.value);
+      state.scores[c.key].score = v;
+      updateCategory(c.key); updateOverall(); touch();
+    });
+    div.querySelector('#comment-'+c.key).addEventListener('input', e=>{
+      state.scores[c.key].comment = e.target.value; touch();
+    });
+  });
+}
+function clampScore(v){
+  if(v===null || v==='') return null;
+  v = Number(v); if(isNaN(v)) return null;
+  return Math.max(0, Math.min(100, v));
+}
+
+/* ======= Evidence ======= */
+function addEvidence(){
+  const title = DOM('#evTitle').value.trim();
+  const url = DOM('#evURL').value.trim();
+  const cat = DOM('#evCat').value;
+  if(!title || !url) return;
+  state.evidence.push({title,url,cat,ts: Date.now()});
+  DOM('#evTitle').value=''; DOM('#evURL').value=''; DOM('#evCat').value='';
+  renderEvidence(); recalcEvidenceCounts(); updateFlags(); touch();
+}
+function isValidURL(u){ try{ new URL(u); return true; }catch(e){ return false; } }
+function renderEvidence(){
+  const wrap = DOM('#evList');
+  if(state.evidence.length===0){ wrap.innerHTML='<p class="muted">No evidence yet.</p>'; return; }
+  const rows = state.evidence.map((e,idx)=>{
+    const valid = isValidURL(e.url);
+    const cls = valid ? 'good' : 'bad';
+    return `
+    <details style="margin-top:8px">
+      <summary>
+        <span class="chip">${e.cat||'Uncategorized'}</span>
+        <span style="margin-left:8px">${escapeHTML(e.title)}</span>
+      </summary>
+      <div class="field">
+        <label>URL</label>
+        <input value="${escapeAttr(e.url)}" data-idx="${idx}" class="ev-url">
+        <div class="status ${cls}" style="margin-top:8px">URL ${valid?'valid':'invalid'}</div>
+      </div>
+      <div class="flex noprint">
+        <button class="btn" onclick="openURL('${escapeAttr(e.url)}')">Open</button>
+        <button class="btn ghost" onclick="delEvidence(${idx})">Delete</button>
+      </div>
+    </details>`;
+  }).join('');
+  wrap.innerHTML = rows;
+  // URL edit bindings
+  document.querySelectorAll('.ev-url').forEach(inp=>{
+    inp.addEventListener('input', (e)=>{
+      const i = Number(e.target.dataset.idx);
+      state.evidence[i].url = e.target.value;
+      renderEvidence(); recalcEvidenceCounts(); updateFlags(); touch();
+    });
+  });
+}
+function delEvidence(i){
+  state.evidence.splice(i,1);
+  renderEvidence(); recalcEvidenceCounts(); updateFlags(); touch();
+}
+function recalcEvidenceCounts(){
+  // reset
+  CATS.forEach(c=> state.scores[c.key].evidenceCount = 0);
+  state.evidence.forEach(e=>{
+    if(e.cat){
+      const cat = CATS.find(c=>c.name===e.cat || c.key===e.cat);
+      if(cat) state.scores[cat.key].evidenceCount++;
+    }
+  });
+  CATS.forEach(c=>{
+    DOM('#evcount-'+c.key).textContent = state.scores[c.key].evidenceCount;
+  });
+}
+
+/* ======= Flags & Meters ======= */
+function updateCategory(key){
+  const sc = state.scores[key].score;
+  DOM('#score-'+key).textContent = sc===null ? '—' : sc;
+  const m = DOM('#meter-'+key).style;
+  m.width = (sc===null?0:sc) + '%';
+  colorizeMeter(DOM('#meter-'+key), sc);
+}
+function colorizeMeter(el, val){
+  if(val===null){ el.style.background='linear-gradient(90deg,#3f4360,#2a2f4b)'; return; }
+  if(val<40) el.style.background='#ef4444';
+  else if(val<70) el.style.background='#f59e0b';
+  else el.style.background='#22c55e';
+}
+function updateOverall(){
+  const nums = Object.values(state.scores).map(s=>s.score).filter(v=>v!==null);
+  const mean = nums.length? Math.round(nums.reduce((a,b)=>a+b,0)/nums.length): null;
+  DOM('#overallScore').textContent = mean===null?'—':mean;
+  const bar = DOM('#overallMeter'); bar.style.width = (mean||0)+'%';
+  colorizeMeter(bar, mean);
+  // push to history
+  if(mean!==null) {
+    if(state.history.length===0 || state.history[state.history.length-1]!==mean){
+      state.history.push(mean);
+      if(state.history.length>20) state.history.shift();
+      drawSpark();
+    }
+  }
+  updateFlags();
+}
+
+function updateFlags(){
+  const wrap = DOM('#flagsWrap'); wrap.innerHTML='';
+  const flags = [];
+  // Rule 1: Missing evidence + low score
+  CATS.forEach(c=>{
+    const s = state.scores[c.key];
+    if((s.score!==null && s.score<50) && s.evidenceCount===0){
+      flags.push({cat:c.name, level:'High', msg:'Low score without any supporting evidence.'});
+    }else if(s.score===null){
+      flags.push({cat:c.name, level:'Medium', msg:'No score provided; competency unknown.'});
+    }
+  });
+  // Rule 2: Invalid evidence URLs
+  const invalid = state.evidence.filter(e=>!isValidURL(e.url));
+  if(invalid.length>0){
+    flags.push({cat:'Evidence Register', level:'Medium', msg:`${invalid.length} invalid URL(s) detected.`});
+  }
+  // Render
+  if(flags.length===0){
+    wrap.innerHTML = `<div class="notice">No red flags detected based on current entries.</div>`;
+    return;
+  }
+  flags.forEach(f=>{
+    const color = f.level==='High'?'bad':(f.level==='Medium'?'warn':'good');
+    const card = document.createElement('div');
+    card.className='card'; card.innerHTML=`
+      <div class="kpi"><h3>${f.cat}</h3><div class="status ${color}">${f.level} Risk</div></div>
+      <p class="muted">${f.msg}</p>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+/* ======= Sparkline ======= */
+function drawSpark(){
+  const el = DOM('#sparkLine');
+  const h = 20, w = 100, max=100, min=0;
+  if(state.history.length===0){ el.setAttribute('points','0,10 100,10'); return; }
+  const pts = state.history.map((v,i,arr)=>{
+    const x = Math.round(i*(w/(arr.length-1||1)));
+    const y = Math.round(h - ((v-min)/(max-min))*h);
+    return `${x},${y}`;
+  }).join(' ');
+  el.setAttribute('points', pts);
+}
+
+/* ======= Save/Load ======= */
+function saveLocal(){
+  state.updatedAt = Date.now();
+  localStorage.setItem('cgca_state', JSON.stringify(state));
+  tagFreshness();
+}
+function loadLocal(){
+  const raw = localStorage.getItem('cgca_state');
+  if(!raw) return;
+  try{
+    state = JSON.parse(raw);
+  }catch(e){ console.warn('Bad state'); }
+}
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'canada_governance_competency_audit.json';
+  a.click();
+}
+function importJSON(file){
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      state = data; rebuildAllFromState();
+    }catch(err){ alert('Invalid JSON'); }
+  };
+  reader.readAsText(file);
+}
+function resetAll(){
+  if(!confirm('Reset all data?')) return;
+  localStorage.removeItem('cgca_state'); location.reload();
+}
+
+/* ======= Helpers ======= */
+function escapeHTML(s){ return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+function escapeAttr(s){ return s.replace(/"/g,'&quot;'); }
+function openURL(u){ try{ window.open(u,'_blank'); }catch(e){} }
+function touch(){ state.updatedAt = Date.now(); tagFreshness(); }
+function tagFreshness(){
+  const el = DOM('#freshnessTag');
+  if(!state.updatedAt){ el.className='status'; el.innerHTML='<span>Freshness: Unknown</span>'; return; }
+  const days = Math.floor((Date.now()-state.updatedAt)/86400000);
+  const lvl = days<=7?'good':(days<=30?'warn':'bad');
+  el.className='status '+lvl; el.innerHTML = `<span>Freshness: ${days} day(s) ago</span>`;
+}
+function populateEvCats(){
+  const sel = DOM('#evCat'); sel.innerHTML='<option value="">Category (optional)</option>';
+  CATS.forEach(c=>{
+    const o=document.createElement('option'); o.value=c.key; o.textContent=c.name; sel.appendChild(o);
+  });
+}
+/* Theme toggle */
+let dark=true;
+function toggleTheme(){
+  dark=!dark;
+  document.body.style.background = dark
+    ? 'radial-gradient(1200px 800px at 10% -10%, #1e1f2a 10%, #0c0f1a 50%, #05060a 100%), var(--bg)'
+    : '#f7f8fc';
+  document.documentElement.style.setProperty('--text', dark?'#eaf1ff':'#0a0b0f');
+  document.documentElement.style.setProperty('--panel', dark?'#0f1220':'#ffffff');
+  DOM('#modeState').textContent = dark?'Dark':'Light';
+}
+/* Rebuild UI from state */
+function rebuildAllFromState(){
+  buildCategories(); populateEvCats(); renderEvidence();
+  // restore fields
+  CATS.forEach(c=>{
+    const s=state.scores[c.key];
+    if(s){ 
+      if(s.score!==null){ document.getElementById('input-'+c.key).value = s.score; }
+      if(s.comment){ document.getElementById('comment-'+c.key).value = s.comment; }
+      updateCategory(c.key);
+      DOM('#evcount-'+c.key).textContent = s.evidenceCount||0;
+    }
+  });
+  DOM('#notes').value = state.notes||'';
+  updateOverall(); tagFreshness(); drawSpark();
+}
+
+/* ======= Events ======= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  buildQuickFilters(); buildCategories(); populateEvCats(); renderEvidence(); updateOverall(); tagFreshness(); drawSpark();
+  loadLocal(); rebuildAllFromState();
+
+  DOM('#addEv').addEventListener('click', addEvidence);
+  DOM('#notes').addEventListener('input', e=>{ state.notes=e.target.value; touch(); });
+  DOM('#saveBtn').addEventListener('click', saveLocal);
+  DOM('#exportBtn').addEventListener('click', exportJSON);
+  DOM('#importFile').addEventListener('change', e=>{ if(e.target.files[0]) importJSON(e.target.files[0]); });
+  DOM('#resetBtn').addEventListener('click', resetAll);
+  // Keyboard
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='s' || e.key==='S'){ e.preventDefault(); saveLocal(); }
+    if(e.key==='e' || e.key==='E'){ e.preventDefault(); exportJSON(); }
+    if(e.key==='i' || e.key==='I'){ e.preventDefault(); DOM('#importFile').click(); }
+    if(e.key==='p' || e.key==='P'){ e.preventDefault(); window.print(); }
+    if(e.key==='?'){ e.preventDefault(); document.getElementById('kbd').showModal(); }
+    if(e.key==='d' || e.key==='D'){ e.preventDefault(); toggleTheme(); }
+  });
+});
+
+/* ======= End ======= */
+</script>
+</body>
+</html>

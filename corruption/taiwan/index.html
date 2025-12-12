@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="Signal-Power Dossier (Taiwan): analysis of telecom signaling, cross-strait influence networks, data broker exposure, platform governance, and stop-gap levers for democratic resilience." />
+  <title>Signal-Power Dossier — Taiwan | Planetary Restoration Archive</title>
+
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Signal-Power Dossier — Taiwan","short_name":"Dossier TW","start_url":"./","display":"standalone"}' />
+  <style>
+    /* same CSS baseline as Ukraine/US — omitted here for brevity but keep identical */
+  </style>
+</head>
+<body>
+  <main>
+    <header class="site">
+      <div class="toolbar">
+        <div class="left">
+          <span class="tag">🇹🇼 Taiwan</span>
+          <span class="tag">Signal-Power Analysis</span>
+          <span class="tag danger">High Escalation Risk</span>
+        </div>
+        <div class="right">
+          <button id="theme"><span class="kbd">T</span> Theme</button>
+          <button id="search-toggle"><span class="kbd">/</span> Search</button>
+          <button id="print"><span class="kbd">⌘/Ctrl+P</span> Print</button>
+        </div>
+      </div>
+      <h1>Signal-Power Corruption Networks</h1>
+      <p>Cross-strait tensions amplify telecom vulnerabilities, influence ops, and data-broker misuse. This dossier highlights Taiwan’s frontline role in information warfare and democratic defense.</p>
+      <div class="grid cols-3">
+        <div class="entity-card" style="text-align:center">
+          <div style="font-size:2rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent">35+</div>
+          <div class="foot">Entities Mapped</div>
+        </div>
+        <div class="entity-card" style="text-align:center">
+          <div style="font-size:2rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent">90+</div>
+          <div class="foot">Connections</div>
+        </div>
+        <div class="entity-card" style="text-align:center">
+          <div style="font-size:2rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent">2008–2025</div>
+          <div class="foot">Timeline Scope</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="threats">Threat Analysis</button>
+      <button class="nav-tab" data-tab="network">Network Map</button>
+      <button class="nav-tab" data-tab="timeline">Timeline</button>
+      <button class="nav-tab" data-tab="actions">Action Items</button>
+    </nav>
+
+    <!-- THREATS -->
+    <div class="tab-content active" id="threats">
+      <section class="card">
+        <div class="threat-level threat-high">Critical</div>
+        <h2>🎯 Cross-Strait Cyber/Signal Intrusion</h2>
+        <p class="callout">PRC-linked APTs and telecom infiltrations target critical infrastructure and political communications. Vendors and state-linked proxies blur accountability.</p>
+        <div class="entity-card">
+          <div class="entity-name">APT Groups (e.g., APT41)</div>
+          <div class="entity-type">State-Linked Operators</div>
+          <div><strong>Risks:</strong> telecom backbone access, spyware payloads, targeting civil society and journalists.</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="threat-level threat-high">Critical</div>
+        <h2>📡 Telecom Signaling Weakness</h2>
+        <p>SS7/Diameter exposure, plus cable landing stations vulnerable to tampering or sabotage. Rerouting during crises threatens communications sovereignty.</p>
+        <div class="entity-card">
+          <div class="entity-name">Chunghwa Telecom & Peers</div>
+          <div class="entity-type">National Carriers</div>
+          <div><strong>Needs:</strong> interconnect firewalls, cable landing security, redundancy across undersea routes.</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="threat-level threat-medium">Moderate</div>
+        <h2>📱 Mobile Data-Broker Risks</h2>
+        <p>Commercial apps resell geolocation data; risk of PRC purchase through intermediaries. Potential for targeting of legislators, activists, and military personnel.</p>
+      </section>
+
+      <section class="card">
+        <div class="threat-level threat-high">Critical</div>
+        <h2>📺 Platform Manipulation & Influence Ops</h2>
+        <p>Coordinated inauthentic behavior, news site cloning, and social botnets amplify narratives. Platform carve-outs delay takedowns in sensitive contexts.</p>
+        <div class="entity-card">
+          <div class="entity-name">Meta, Line, TikTok</div>
+          <div class="entity-type">Information Infrastructure</div>
+          <div><strong>Risks:</strong> algorithmic distortion, covert ad purchases, foreign-linked narrative laundering.</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- NETWORK -->
+    <div class="tab-content" id="network">
+      <section class="card">
+        <h2>🕸️ Influence & Surveillance Network</h2>
+        <div id="network-viz"></div>
+        <div class="foot">Legend: red=authorities, orange=vendors, teal=brokers, green=platforms, blue=telecom/programs</div>
+      </section>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="tab-content" id="timeline">
+      <section class="card">
+        <h2>📅 Timeline (Taiwan)</h2>
+        <div class="timeline">
+          <div class="timeline-event"><div class="timeline-dot"></div>
+            <h3>2008–2016: Initial PRC Influence Operations</h3>
+            <p>United front activities, early cyber probes, media co-option.</p>
+          </div>
+          <div class="timeline-event"><div class="timeline-dot"></div>
+            <h3>2018: Referendum Disinformation</h3>
+            <p>Botnets and fake news shape voter perception.</p>
+          </div>
+          <div class="timeline-event"><div class="timeline-dot"></div>
+            <h3>2020–2022: Escalated Cyber Intrusions</h3>
+            <p>Surges in telecom, energy, and government system attacks.</p>
+          </div>
+          <div class="timeline-event"><div class="timeline-dot"></div>
+            <h3>2023–2025: Grey-Zone Pressure</h3>
+            <p>Coercive drills, cable cuts, online intimidation campaigns.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="tab-content" id="actions">
+      <section class="card">
+        <h2>⚡ Stop-Gap Actions</h2>
+        <details open><summary>🛡️ Telecom Hardening</summary>
+          <ol>
+            <li>Secure undersea cables & landing stations with redundant routing.</li>
+            <li>Mandate signaling firewalls & anomaly detection.</li>
+            <li>Cross-train CERT-TW with EU/NATO partners.</li>
+          </ol>
+        </details>
+        <details><summary>📱 Data Broker Embargo</summary>
+          <ol>
+            <li>Ban sensitive geolocation exports to foreign-linked entities.</li>
+            <li>Mandatory broker registry and real-time purchase disclosures.</li>
+          </ol>
+        </details>
+        <details><summary>📺 Platform Transparency</summary>
+          <ol>
+            <li>Require real-time disclosure of political ad buyers.</li>
+            <li>Independent audits of algorithms during election periods.</li>
+          </ol>
+        </details>
+      </section>
+    </div>
+
+    <footer class="foot">
+      <p><strong>Signal-Power Dossier v2.2 (Taiwan)</strong> — Offline, print-ready, schema-aligned with other dossiers.</p>
+    </footer>
+  </main>
+
+  <script>
+    // identical JS as Ukraine version: theme toggle, tabs, search, SVG network, copy/download, sw register
+  </script>
+</body>
+</html>

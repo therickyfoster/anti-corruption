@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Android Continuity Stamp — Anti-Tamper / Anti-Coercion / Anti-Cooption</title>
+<meta name="color-scheme" content="dark light"/>
+<meta name="description" content="Public-ready, offline-first guide for Android (Termux): timestamp files, build ip_proof_manifest.json, zip, re-hash. Includes anti-tamper integrity stamp, decoy mode, and export."/>
+<style>
+:root{
+  --bg:#0a0c12; --ink:#e8eef8; --muted:#a7b1c4;
+  --panel:#101522; --panel2:#0f1421;
+  --accent:#57c6ff; --accent2:#7aff9a; --danger:#ff6b6b; --gold:#ffd166;
+  --brd:1px solid rgba(255,255,255,.08);
+  --rad:16px; --shadow:0 12px 36px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme: light){
+  :root{--bg:#f7fbff;--ink:#0c1b2a;--muted:#516073;--panel:#e9f0f7;--panel2:#dde6f0;--brd:1px solid rgba(0,0,0,.08)}
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,"Helvetica Neue",Arial}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code,kbd{background:rgba(255,255,255,.08);padding:.2rem .4rem;border-radius:8px}
+pre{margin:0;padding:1rem;background:rgba(255,255,255,.05);border:var(--brd);border-radius:12px;overflow:auto}
+pre code{background:transparent;padding:0}
+.hero{
+  min-height:56vh;display:grid;place-items:center;text-align:center;isolation:isolate;overflow:hidden;
+  background:
+    radial-gradient(1200px 500px at 50% 0%, rgba(87,198,255,.08), transparent 60%),
+    radial-gradient(1400px 700px at 30% 100%, rgba(122,255,154,.06), transparent 60%),
+    linear-gradient(180deg,#0b0f18 0%,#0a0c12 60%,#0a0c12 100%)
+}
+.hero h1{margin:0;font-size:clamp(1.6rem,3.5vw + 1rem,3.2rem);letter-spacing:.3px;color:var(--accent);text-shadow:0 8px 40px rgba(87,198,255,.25)}
+.hero p{max-width:900px;margin:.8rem auto 0;color:var(--muted)}
+.badges{margin-top:1rem;display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center}
+.badge{border:var(--brd);border-radius:999px;padding:.25rem .6rem;color:var(--muted);background:linear-gradient(180deg,var(--panel),var(--panel2))}
+main{max-width:1100px;margin:auto;padding:min(5vw,28px)}
+section{background:linear-gradient(180deg,var(--panel),var(--panel2));border:var(--brd);border-radius:var(--rad);box-shadow:var(--shadow);margin:1rem 0;overflow:hidden}
+section>header{padding:1rem 1.2rem;border-bottom:var(--brd);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+section>header h2{margin:.1rem 0;color:var(--accent2)}
+section>div{padding:1.2rem}
+.grid{display:grid;gap:1rem}
+.cols-2{grid-template-columns:1fr}
+@media(min-width:900px){.cols-2{grid-template-columns:1fr 1fr}}
+.btn{
+  border:var(--brd);background:linear-gradient(180deg,var(--panel),var(--panel2));
+  color:var(--ink);padding:.65rem .9rem;border-radius:12px;box-shadow:var(--shadow);
+  display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;user-select:none
+}
+.btn.primary{border-color:rgba(87,198,255,.5)}
+.toolbar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.copyrow{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:.4rem 0}
+.muted{color:var(--muted)} .danger{color:var(--danger)} .gold{color:var(--gold)}
+.lockline{
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.9rem;color:var(--muted);
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0 22px,rgba(87,198,255,.03) 22px 44px);
+  padding:.6rem;border-radius:12px;border:var(--brd)
+}
+dl{display:grid;grid-template-columns:minmax(140px,220px) 1fr;gap:.4rem 1rem}
+dt{color:var(--muted)} dd{margin:0}
+details{border:var(--brd);border-radius:12px;padding:.6rem .8rem;margin:.6rem 0;background:rgba(255,255,255,.03)}
+details[open]{background:rgba(122,255,154,.06)}
+summary{cursor:pointer;font-weight:600}
+kbd{border:var(--brd)}
+footer{padding:2rem;text-align:center;color:var(--muted)}
+.footgrid{display:grid;gap:.6rem}
+@media(min-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+@media print{
+  .hero,.toolbar .btn:not(.print-ok),.copyrow .btn{display:none!important}
+  section,body{background:#fff!important;color:#000!important}
+  a{color:#000!important;text-decoration:underline}
+}
+.hidden{display:none!important}
+.decoy .real{display:none!important}
+.decoy .decoy{display:block!important}
+.decoy-banner{
+  display:none;position:fixed;inset:auto 12px 12px 12px;z-index:9999;
+  border:var(--brd);background:#222a;padding:.6rem .8rem;border-radius:12px;color:#fff
+}
+.decoy .decoy-banner{display:block}
+</style>
+</head>
+<body>
+<header class="hero" id="top">
+  <div>
+    <h1>Android Continuity Stamp</h1>
+    <p class="muted">Timestamp → Manifest → Zip → Re-hash. Prove integrity. Resist tampering. Keep stewardship sovereign.</p>
+    <div class="badges">
+      <span class="badge">Zero-Harm</span>
+      <span class="badge">Offline-First</span>
+      <span class="badge">Public-Ready</span>
+      <span class="badge">Tamper-Evident</span>
+      <span class="badge">Anti-Coercion</span>
+      <span class="badge">Anti-Cooption</span>
+    </div>
+    <div class="toolbar" style="margin-top:1rem;justify-content:center">
+      <a href="#tldr" class="btn primary">⚡ TL;DR</a>
+      <a href="#deep" class="btn">📚 In-Depth</a>
+      <button id="hashDoc" class="btn">🔐 Tamper-Stamp (SHA-256)</button>
+      <button id="toggleDecoy" class="btn">🛡️ Decoy Mode</button>
+      <button class="btn print-ok" onclick="window.print()">🖨️ Print / Save PDF</button>
+    </div>
+    <div class="lockline" style="margin-top:.8rem"><strong>page.hash</strong>: <span id="hashVal">—</span> • weave: myco-civic-v2 • seed: 0xFADEBEEF</div>
+  </div>
+</header>
+
+<main class="real">
+  <!-- TL;DR -->
+  <section id="tldr" aria-labelledby="tldr-h2">
+    <header><h2 id="tldr-h2">TL;DR — 5 Commands on Android (Termux)</h2></header>
+    <div class="grid cols-2">
+      <div>
+        <ol>
+          <li><strong>Install Termux</strong> from F-Droid (not Play Store). Open Termux.</li>
+          <li><strong>Update & tools</strong>:
+            <div class="copyrow"><button class="btn copy" data-copy="pkg up -y && pkg install -y coreutils jq zip openssl b3sum">Copy</button><code>pkg up -y && pkg install -y coreutils jq zip openssl b3sum</code></div>
+          </li>
+          <li><strong>Create stamp script</strong> in your target folder:
+            <div class="copyrow"><button class="btn copy" data-copy="cat > continuity_stamp.sh <<'BASH'
+#!/usr/bin/env bash
+set -euo pipefail
+DIR="${1:-.}"; MANIFEST="ip_proof_manifest.json"; STAMPFILE=".continuity_stamp.log"
+EXCLUDE_PATTERNS=("*.zip" "$MANIFEST" "$(basename "$0")" "$STAMPFILE")
+TS_UTC=\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"; EPOCH=\"$(date -u +%s)\"
+ZIP_NAME=\"$(basename \"$(realpath \"$DIR\")\")-sealed-$(date -u +%Y%m%d-%H%M%S).zip\"
+have(){ command -v \"$1\" >/dev/null 2>&1; }
+h256(){ sha256sum \"$1\" | awk '{print $1}'; }
+h1(){ sha1sum \"$1\" | awk '{print $1}'; }
+mapfile -d '' FILES < <(find \"$DIR\" -maxdepth 1 -type f -print0)
+_filtered=(); for f in \"${FILES[@]}\"; do base=\"$(basename \"$f\")\"; skip=false; for pat in \"${EXCLUDE_PATTERNS[@]}\"; do [[ \"$base\" == $pat ]]&&{skip=true;break;}; done; $skip||_filtered+=(\"$f\"); done; FILES=(\"${_filtered[@]}\")
+tmp_manifest=\"$(mktemp)\"; echo '{\"created_utc\":\"'"$TS_UTC"'\",\"epoch\":'"$EPOCH"',"\"files\":[' > \"$tmp_manifest\"
+first=1; for f in \"${FILES[@]}\"; do size=\"$(stat -c '%s' \"$f\")\"; mt=\"$(stat -c '%Y' \"$f\")\"; mu=\"$(date -u -d \"@$mt\" +\"%Y-%m-%dT%H:%M:%SZ\" 2>/dev/null || date -u +\"%Y-%m-%dT%H:%M:%SZ\")\"; s256=\"$(h256 \"$f\")\"; s1=\"$(h1 \"$f\")\"
+ [[ $first -eq 1 ]]&&first=0||echo ','>>\"$tmp_manifest\"
+ jq -c --arg p \"$(basename \"$f\")\" --arg m \"$mu\" --arg s256 \"$s256\" --arg s1 \"$s1\" --argjson size \"$size\" '{path:$p,size:$size,mtime_utc:$m,hash:{sha256:$s256,sha1:$s1}}'<<<'{}'>>\"$tmp_manifest\"
+done; echo '],\"aggregate\":{}}'>>\"$tmp_manifest\"
+agg_tmp=\"$(mktemp)\"; for f in \"${FILES[@]}\"; do printf \"%s  %s\n\" \"$(h256 \"$f\")\" \"$(basename \"$f\")\"; done | sort > \"$agg_tmp\"
+agg256=\"$(h256 \"$agg_tmp\")\"; agg1=\"$(h1 \"$agg_tmp\")\"; rm -f \"$agg_tmp\"
+jq --arg a256 \"$agg256\" --arg a1 \"$agg1\" '.aggregate={directory_sha256:$a256,directory_sha1:$a1}' \"$tmp_manifest\">\"$MANIFEST\"
+listfile=\"$(mktemp)\"; for f in \"${FILES[@]}\"; do echo \"$f\">>\"$listfile\"; done; echo \"$MANIFEST\" >> \"$listfile\"
+zip -9 -j \"$ZIP_NAME\" -@ < \"$listfile\" >/dev/null 2>&1 || true; rm -f \"$listfile\"
+z256=\"$(h256 \"$ZIP_NAME\")\"; z1=\"$(h1 \"$ZIP_NAME\")\"
+jq --arg zip \"$ZIP_NAME\" --arg z256 \"$z256\" --arg z1 \"$z1\" --arg sealed_utc \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" \
+  '.sealed={zip:$zip,sha256:$z256,sha1:$z1,sealed_utc:$sealed_utc}' \"$MANIFEST\">\"$MANIFEST.tmp\" && mv \"$MANIFEST.tmp\" \"$MANIFEST\"
+printf \"== Continuity Stamp ==\nZIP: %s\nZIP_SHA256: %s\n\" \"$ZIP_NAME\" \"$z256\" | tee \"$STAMPFILE\"
+echo done.
+BASH
+chmod +x continuity_stamp.sh">Copy</button><code>cat &gt; continuity_stamp.sh &lt;&lt;'BASH' … chmod +x continuity_stamp.sh</code></div>
+          </li>
+          <li><strong>Run it</strong> in the folder with your files:
+            <div class="copyrow"><button class="btn copy" data-copy="./continuity_stamp.sh .">Copy</button><code>./continuity_stamp.sh .</code></div>
+          </li>
+          <li><strong>Verify</strong> ZIP hash matches manifest:
+            <div class="copyrow"><button class="btn copy" data-copy="sha256sum *-sealed-*.zip && jq -r '.sealed.sha256' ip_proof_manifest.json">Copy</button><code>sha256sum *-sealed-*.zip && jq -r '.sealed.sha256' ip_proof_manifest.json</code></div>
+          </li>
+        </ol>
+      </div>
+      <div>
+        <h3 style="margin:.2rem 0">What you’ll get</h3>
+        <dl>
+          <dt><code>ip_proof_manifest.json</code></dt><dd>Per-file hashes, sizes, mtimes, aggregate directory hash, sealed ZIP hashes.</dd>
+          <dt><code>.continuity_stamp.log</code></dt><dd>Human-readable receipt with key values.</dd>
+          <dt><code>&lt;name&gt;-sealed-YYYYMMDD-HHMMSS.zip</code></dt><dd>Sealed archive (includes the manifest).</dd>
+        </dl>
+        <div class="lockline"><strong>Integrity Tip:</strong> Save the ZIP’s SHA-256 somewhere you don’t control (DM it to a friend, write on paper). Anything that alters the ZIP will change the hash.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IN DEPTH -->
+  <section id="deep" aria-labelledby="deep-h2">
+    <header><h2 id="deep-h2">In-Depth — Why this works & how to adapt</h2></header>
+    <div class="grid cols-2">
+      <div>
+        <details open>
+          <summary>One-time tool setup</summary>
+          <p class="muted">Run once inside Termux. These are standard packages (no root).</p>
+<pre><code>pkg up -y
+pkg install -y coreutils jq zip openssl b3sum</code></pre>
+        </details>
+        <details>
+          <summary>Script anatomy</summary>
+          <ul>
+            <li><strong>Finds files</strong> (non-recursive) and excludes existing zips & the manifest.</li>
+            <li><strong>Hashes</strong> each file (SHA-256 + SHA-1) and records size & modified time (UTC).</li>
+            <li><strong>Builds aggregate hash</strong> of the sorted list of per-file SHA-256 lines — a directory signature.</li>
+            <li><strong>Zips</strong> those files plus the manifest (no paths, clean root).</li>
+            <li><strong>Re-hashes ZIP</strong> and appends values back into the manifest.</li>
+          </ul>
+          <p>The result is **tamper-evident**: any change to any file or the ZIP alters the recorded hashes.</p>
+        </details>
+        <details>
+          <summary>Anti-Tamper, Anti-Coercion, Anti-Cooption features</summary>
+          <ul>
+            <li><strong>Local hashes only:</strong> cryptographic proofs without exposing content.</li>
+            <li><strong>Deterministic aggregate signature:</strong> proves a specific set of files existed together at a moment in time.</li>
+            <li><strong>Decoy Mode (this page):</strong> toggle a benign view instantly; no network calls, no timers.</li>
+            <li><strong>License banner:</strong> attribution & non-malicious-use clause embedded to resist co-option.</li>
+            <li><strong>Print / PDF:</strong> export the instructions exactly as seen for physical custody chains.</li>
+          </ul>
+        </details>
+        <details>
+          <summary>Make it global (optional)</summary>
+<pre><code>mkdir -p ~/bin
+mv continuity_stamp.sh ~/bin/continuity_stamp
+chmod +x ~/bin/continuity_stamp
+echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+. ~/.bashrc
+# usage: continuity_stamp .</code></pre>
+        </details>
+        <details>
+          <summary>Recursion & exclusions (optional)</summary>
+          <p>To include subfolders, change the <code>find</code> line to remove <code>-maxdepth 1</code> and consider excluding heavy artifacts:</p>
+<pre><code>find "$DIR" -type f \
+  \( -name "*.zip" -o -name "*.apk" -o -name "*.aab" -o -name "$MANIFEST" \) -prune -o -print0</code></pre>
+        </details>
+      </div>
+      <div>
+        <details open>
+          <summary>Optional anchoring (hash-only) to IPFS/Arweave</summary>
+          <p class="muted">Anchoring just the <em>hash</em> (not your private files) can prove timestamp publicly without revealing content.</p>
+<pre><code># After ZIP is created:
+# 1) IPFS (hash-only) – requires local daemon or web3.storage CLI
+# ipfs add --only-hash --cid-version=1 "&lt;your-zip&gt;"
+# 2) Arweave via ArDrive CLI (txid without uploading content) – not always supported; fallback is to upload small, non-sensitive hash receipt file.
+# echo "&lt;zip_sha256&gt;" &gt; zip.sha256.txt
+# ardrive upload zip.sha256.txt</code></pre>
+          <p>Record the resulting CID/TxID inside the manifest’s <code>.sealed</code> as <code>ipfs_cid</code> / <code>ar_txid</code>.</p>
+        </details>
+        <details>
+          <summary>Verification workflow (portable)</summary>
+          <ol>
+            <li>Compute <code>sha256sum sealed.zip</code> on any machine.</li>
+            <li>Open <code>ip_proof_manifest.json</code> and confirm <code>.sealed.sha256</code> matches.</li>
+            <li>Optionally unzip to verify per-file hashes match the manifest entries.</li>
+          </ol>
+          <p>Any mismatch indicates alteration.</p>
+        </details>
+        <details>
+          <summary>Security notes (practical)</summary>
+          <ul>
+            <li>Use **F-Droid Termux** (trust path). Avoid random Termux forks.</li>
+            <li>Keep an offline copy of key receipts (paper or air-gapped text file).</li>
+            <li>Don’t anchor sensitive content; anchor hash receipts only.</li>
+            <li>Consider a second device to recompute hashes (two-party verification).</li>
+          </ul>
+        </details>
+        <details>
+          <summary>License & Non-Malicious-Use Clause</summary>
+          <p>Use, adapt, and share for lawful, zero-harm stewardship. Attribution appreciated: “Edmonton Continuity Lab — Android Continuity Stamp.” No use for harassment, surveillance of vulnerable groups, or any harm to life.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Decoy content (benign how-to) -->
+<main class="decoy hidden" aria-hidden="true">
+  <section>
+    <header><h2>Gallery: Local File Organization Tips</h2></header>
+    <div>
+      <p class="muted">Basic tutorial on organizing downloads, renaming files, and cleaning storage on Android. No advanced topics shown.</p>
+      <ol>
+        <li>Open <em>Files</em> app → long-press to select multiple files.</li>
+        <li>Use folders by project: <code>Pictures/2025-Trips</code>, <code>Docs/Receipts</code>.</li>
+        <li>Back up weekly to SD card or encrypted cloud.</li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footgrid">
+    <div class="lockline">Continuity reference: Node-YEG-Δ • weave: myco-civic-v2 • local only • proof-of-life: browser hash</div>
+    <div class="lockline">myco.lock // fungal-weave engaged // do-not-strip // checksum seed: 0xFADEBEEF // link:arch unresolved</div>
+  </div>
+  <p style="margin-top:1rem" class="muted">Single-file, offline-first. Enhancements require JavaScript; all instructions are visible without it.</p>
+  <noscript><p class="muted">JavaScript disabled: copy-buttons, hash, and decoy toggle are inactive; content is still readable and printable.</p></noscript>
+</footer>
+
+<div class="decoy-banner">Decoy Mode Active — press “🛡️ Decoy Mode” again to return</div>
+
+<script>
+(function(){
+  "use strict";
+  const $ = (s, r=document)=>r.querySelector(s);
+  const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+  function safe(fn){ try{ fn(); }catch(e){ console.error(e); } }
+
+  // Copy buttons
+  safe(()=>{
+    $$(".copy").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const txt = btn.getAttribute("data-copy") || "";
+        try{
+          await navigator.clipboard.writeText(txt);
+          btn.textContent = "✔ Copied";
+          setTimeout(()=>{ btn.textContent = "Copy"; }, 1200);
+        }catch(e){
+          // fallback: show prompt
+          window.prompt("Copy this:", txt);
+        }
+      });
+    });
+  });
+
+  // SHA-256 of page
+  safe(()=>{
+    const hashBtn = $("#hashDoc"), hashVal = $("#hashVal");
+    async function sha256(str){
+      const enc = new TextEncoder().encode(str);
+      const buf = await crypto.subtle.digest("SHA-256", enc);
+      return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+    }
+    if(hashBtn && hashVal){
+      hashBtn.addEventListener("click", async ()=>{
+        try{
+          const html = document.documentElement.outerHTML;
+          const h = await sha256(html);
+          hashVal.textContent = h;
+        }catch(e){
+          hashVal.textContent = "hash error: " + e.message;
+        }
+      });
+    }
+  });
+
+  // Decoy mode toggle (no timers, no network)
+  safe(()=>{
+    const toggle = $("#toggleDecoy");
+    const body = document.body;
+    const real = document.querySelector("main.real");
+    const decoy = document.querySelector("main.decoy");
+    toggle?.addEventListener("click", ()=>{
+      const on = !body.classList.contains("decoy");
+      body.classList.toggle("decoy", on);
+      if(on){ decoy?.classList.remove("hidden"); real?.setAttribute("aria-hidden","true"); }
+      else { decoy?.classList.add("hidden"); real?.removeAttribute("aria-hidden"); }
+    });
+  });
+
+  // Pre-compute a short “seed hash” preview so users see something without clicking
+  safe(async ()=>{
+    const hv = $("#hashVal");
+    if(!hv) return;
+    try{
+      const enc = new TextEncoder().encode("seed:0xFADEBEEF");
+      const buf = await crypto.subtle.digest("SHA-256", enc);
+      const h = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,16) + "…";
+      if(hv.textContent.trim()==="—") hv.textContent = h;
+    }catch(e){}
+  });
+
+  /* Cosmetic bugged/locked hints (no execution)
+     myco.router = function(){  window.location.href = "about:blank#planetaryrestorationarchive.com/peace/lab?node=YEG" }
+     checksum: 0xFADEBEEF :: fungal-weave engaged :: do-not-strip
+  */
+})();
+</script>
+</body>
+</html>

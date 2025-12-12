@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<!-- Fortified Civic Lab — Regina (YQR-Δ) • anti-tamper / anti-coercion / anti-cooption / anti-theft -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Regina Continuity Lab — Corruption Reversal & Mycelial Action Bank [Fortified]</title>
+
+<!-- Provenance & License -->
+<meta name="author" content="Progenitor Steward | Continuity Archive (Foster’s Forge • Lightforge • Sentinel ARC • RegenNodes • Peace Ripple)" />
+<meta name="generator" content="Continuity Lab Forge v2—myco-civic" />
+<meta name="license" content="Zero-Harm Open Civic License v1.0 (ZH-OCL-1.0)" />
+<meta name="copyright" content="© Continuity Archive — for public good, attribution required, zero-harm required." />
+<meta name="continuity:node" content="YQR-Δ" />
+<meta name="continuity:weave" content="myco-civic-v2" />
+<meta name="continuity:dirp" content="Intent>Peace, Unity, Sovereignty, Regeneration :: Methods>Transparency, Due Process, Care :: Prohibitions>Harm, Retaliation, Manipulation" />
+<meta name="description" content="Fortified, single-file civic lab for Regina: lawful audits, regenerative actions, and local integrity stamping. Offline-first, zero-harm." />
+<meta name="color-scheme" content="dark light" />
+<style>
+  :root{
+    --bg:#0a0c12; --ink:#e8eef8; --muted:#a7b1c4;
+    --panel:#101522; --panel-2:#0f1421;
+    --border:1px solid rgba(255,255,255,.08);
+    --accent:#57c6ff; --accent-2:#7aff9a; --danger:#ff6b6b; --gold:#ffd166; --vio:#b28cff;
+    --radius:16px; --shadow:0 14px 40px rgba(0,0,0,.35)
+  }
+  @media (prefers-color-scheme: light){
+    :root{--bg:#f7fbff; --ink:#0c1b2a; --muted:#516073; --panel:#e9f0f7; --panel-2:#dde6f0; --border:1px solid rgba(0,0,0,.08)}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica Neue,Arial}
+  a{color:var(--accent)}
+  code,kbd{background:rgba(255,255,255,.08);padding:.2rem .35rem;border-radius:8px}
+  header.hero{min-height:62vh;display:grid;place-items:center;text-align:center;isolation:isolate;overflow:hidden;background:
+    radial-gradient(1200px 500px at 50% 0%, rgba(87,198,255,.08), transparent 60%),
+    radial-gradient(1400px 700px at 30% 100%, rgba(122,255,154,.06), transparent 60%),
+    linear-gradient(180deg,#0b0f18 0%,#0a0c12 60%,#0a0c12 100%)}
+  header.hero h1{margin:0;font-size:clamp(1.8rem,3.8vw + 1rem,3.6rem);letter-spacing:.4px;color:var(--accent);text-shadow:0 8px 40px rgba(87,198,255,.25)}
+  header.hero p{max-width:980px;margin:.8rem auto 0;color:var(--muted)}
+  .cta{margin-top:1.2rem;display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+  .btn{border:var(--border);background:linear-gradient(180deg,var(--panel),var(--panel-2));color:var(--ink);padding:.8rem 1rem;border-radius:14px;box-shadow:var(--shadow);text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;cursor:pointer}
+  .btn.primary{border-color:rgba(87,198,255,.5)}
+  .chip{display:inline-block;padding:.25rem .6rem;border-radius:999px;border:var(--border);color:var(--muted);margin:.2rem}
+  main{max-width:1100px;margin:auto;padding:min(5vw,28px)}
+  section{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin:1rem 0;overflow:hidden}
+  section>header{padding:1rem 1.2rem;border-bottom:var(--border);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+  section>header h2{margin:.1rem 0;color:var(--accent-2)}
+  section>div{padding:1.2rem}
+  .grid{display:grid;gap:1rem}
+  .cols-2{grid-template-columns:1fr}
+  @media(min-width:900px){.cols-2{grid-template-columns:1fr 1fr}}
+  .toolbar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+  .toolbar input,.toolbar select,.toolbar button{background:rgba(255,255,255,.05);color:var(--ink);border:var(--border);border-radius:10px;padding:.55rem .7rem;outline:none}
+  .tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
+  .tag{padding:.2rem .55rem;border-radius:999px;border:var(--border);cursor:pointer;user-select:none}
+  .tag.active{background:rgba(87,198,255,.12);border-color:rgba(87,198,255,.5)}
+  table{width:100%;border-collapse:collapse;font-size:.95rem}
+  th,td{padding:.6rem .5rem;border-bottom:var(--border)}
+  th{color:var(--muted);text-align:left;font-weight:600}
+  tr:hover td{background:rgba(255,255,255,.03)}
+  details{border:var(--border);border-radius:12px;padding:.6rem .8rem;margin:.6rem 0;background:rgba(255,255,255,.03)}
+  details[open]{background:rgba(122,255,154,.06)}
+  summary{cursor:pointer;font-weight:600}
+  .muted{color:var(--muted)} .danger{color:var(--danger)} .gold{color:var(--gold)} .vio{color:var(--vio)}
+  .lockline{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.85rem;color:var(--muted);user-select:text;background:repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0 22px,rgba(87,198,255,.03) 22px 44px);padding:.6rem;border-radius:12px;border:var(--border)}
+  footer{padding:2rem;text-align:center;color:var(--muted)}
+  .footgrid{display:grid;gap:.6rem}
+  @media(min-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+  @media print{
+    header.hero,.cta,.toolbar button.export,.toolbar button.hash{display:none!important}
+    section,body{background:#fff!important;color:#000!important}
+    a{color:#000!important;text-decoration:underline}
+  }
+</style>
+</head>
+<body>
+<header class="hero" id="top" role="banner" aria-label="Regina Continuity Lab (Fortified)">
+  <div>
+    <h1>Regina Continuity Lab — Fortified</h1>
+    <p class="muted">A public, lawful instrument: <strong>anti-tamper, anti-coercion, anti-cooption, anti-theft</strong>. Open by design, accountable by proof.</p>
+    <div class="cta">
+      <a href="#preface" class="btn">📜 Preamble (Long-form)</a>
+      <a href="#map" class="btn primary">📍 Corruption Map</a>
+      <a href="#bank" class="btn">🌱 Mycelium Bank</a>
+      <a href="#forge" class="btn">⚒️ Plan Forge</a>
+      <a href="#verify" class="btn">🧾 Verify & Export</a>
+    </div>
+    <div class="chip">Peace-First</div><div class="chip">Unity of Peoples</div><div class="chip">Sovereignty Guard</div><div class="chip">Tech as Adaptation</div>
+    <div class="lockline" style="margin-top:.6rem">myco.lock • node:YQR-Δ • weave:myco-civic-v2 • seed:0xFADEBEEF • ZH-OCL-1.0</div>
+  </div>
+</header>
+
+<main role="main">
+
+  <!-- LONG-FORM PREFACE -->
+  <section id="preface" aria-labelledby="preface-h2">
+    <header><h2 id="preface-h2">Preamble — License & Safeguards</h2></header>
+    <div>
+      <p>
+        This lab exists to convert extractive patterns into restorative infrastructure. It may be copied and adapted under
+        <strong>Zero-Harm Open Civic License v1.0</strong>. You must keep attribution, disclose modifications, and avoid harmful/retaliatory use.
+        The license and continuity metadata are part of the artifact; removing them is a co-option signal.
+      </p>
+      <p>
+        <strong class="vio">No coercion:</strong> This file runs locally; no network calls. <strong class="vio">No tampering:</strong> Hash at will. 
+        <strong class="vio">No theft:</strong> Provenance is embedded in license meta, section locklines, and JSON export payloads.
+      </p>
+      <div class="lockline">preface.lock • YQR-Δ • preserve on redistribution • disclose changes</div>
+    </div>
+  </section>
+
+  <!-- CORRUPTION MAP -->
+  <section id="map" aria-labelledby="map-h2">
+    <header>
+      <h2 id="map-h2">Corruption Pattern Map</h2>
+      <div class="muted">Guide lawful audits; replace placeholders with evidence logs.</div>
+      <div class="lockline">map.lock • YQR-Δ • domains:[procurement,housing,environment,finance,policing,transit,lake] • tagset v2</div>
+    </header>
+    <div class="grid cols-2">
+      <div>
+        <div class="toolbar" role="region" aria-label="Filters">
+          <input id="search" type="search" placeholder="Search patterns, domains, signals…" aria-label="Search" />
+          <select id="deptFilter" aria-label="Filter by domain">
+            <option value="">All domains</option>
+            <option>Procurement</option>
+            <option>Housing & Social</option>
+            <option>Environment</option>
+            <option>Finance</option>
+            <option>Policing & Justice</option>
+            <option>Transit & Infrastructure</option>
+            <option>Water & Lake</option>
+          </select>
+          <button id="resetFilters" class="hash" type="button">Reset</button>
+        </div>
+        <div class="tags" id="tags" aria-label="Quick tags">
+          <span class="tag" data-tag="budget">budget</span>
+          <span class="tag" data-tag="oversight">oversight</span>
+          <span class="tag" data-tag="sole-source">sole-source</span>
+          <span class="tag" data-tag="vendor-lock">vendor-lock</span>
+          <span class="tag" data-tag="tax">tax</span>
+          <span class="tag" data-tag="lobby">lobby</span>
+          <span class="tag" data-tag="retaliation">retaliation</span>
+          <span class="tag" data-tag="air">air</span>
+          <span class="tag" data-tag="water">water</span>
+          <span class="tag" data-tag="soil">soil</span>
+          <span class="tag" data-tag="housing">housing</span>
+          <span class="tag" data-tag="care">care</span>
+          <span class="tag" data-tag="lake">lake</span>
+        </div>
+
+        <table id="mapTable" aria-label="Corruption patterns">
+          <thead><tr><th>Pattern</th><th>Domain</th><th>Signals</th></tr></thead>
+          <tbody>
+            <tr data-tags="budget oversight" data-domain="Transit & Infrastructure">
+              <td><strong>Vanity megaproject cost creep</strong><div class="muted"><span class="chip">budget</span> <span class="chip">oversight</span></div></td>
+              <td>Transit & Infrastructure</td>
+              <td class="muted">Phase-split approvals • lowball bids • change-order flood</td>
+            </tr>
+            <tr data-tags="sole-source vendor-lock" data-domain="Procurement">
+              <td><strong>Opaque procurement loop</strong><div class="muted"><span class="chip">sole-source</span> <span class="chip">vendor-lock</span></div></td>
+              <td>Procurement</td>
+              <td class="muted">Repeat awards • rushed RFPs • vague scoring rubrics</td>
+            </tr>
+            <tr data-tags="tax lobby" data-domain="Finance">
+              <td><strong>Crown-adjacent incentive fog</strong><div class="muted"><span class="chip">tax</span> <span class="chip">lobby</span></div></td>
+              <td>Finance</td>
+              <td class="muted">Off-cycle abatements • weak clawbacks • KPI-free grants</td>
+            </tr>
+            <tr data-tags="retaliation" data-domain="Policing & Justice">
+              <td><strong>Whistleblower chill & gatekeeping</strong><div class="muted"><span class="chip">retaliation</span></div></td>
+              <td>Policing & Justice</td>
+              <td class="muted">HR “reorgs” post-disclosure • lost tickets • NDAs</td>
+            </tr>
+            <tr data-tags="air water soil lake" data-domain="Water & Lake">
+              <td><strong>Wascana externalities</strong><div class="muted"><span class="chip">air</span> <span class="chip">water</span> <span class="chip">soil</span> <span class="chip">lake</span></div></td>
+              <td>Water & Lake</td>
+              <td class="muted">Sparse baseline stations • storm overflow gaps • self-reporting</td>
+            </tr>
+            <tr data-tags="housing care" data-domain="Housing & Social">
+              <td><strong>Housing funds diverted from need</strong><div class="muted"><span class="chip">housing</span> <span class="chip">care</span></div></td>
+              <td>Housing & Social</td>
+              <td class="muted">Consultant bloat • pilot churn • few units delivered</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <h3 style="margin:.2rem 0">Pattern–Signal Legend</h3>
+        <ul class="muted">
+          <li><strong>Signals</strong> are observable red flags. Match them to your logs.</li>
+          <li><strong>Domains</strong> route items to the right oversight bodies.</li>
+          <li><strong>Tags</strong> power filters (budget, soil, housing…).</li>
+        </ul>
+        <div class="lockline">legend.lock • YQR-Δ • keep tags+domains for integrity</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MYCELIUM BANK -->
+  <section id="bank" aria-labelledby="bank-h2">
+    <header>
+      <h2 id="bank-h2">Mycelium Bank of Action Steps</h2>
+      <div class="muted">Adopt, adapt, publish. Each entry includes goal, practice, verification, and outcomes.</div>
+      <div class="lockline">bank.lock • YQR-Δ • license: ZH-OCL-1.0 • export carries provenance</div>
+    </header>
+    <div>
+      <details open>
+        <summary>Transparency Spores</summary>
+        <ul>
+          <li>Open Contract Ledger (per-line) — publish line items, change orders, invoices; reconcile quarterly.</li>
+          <li>Evaluator Conflict + Auto-Recusal — declare in real-time; UI blocks conflicted scoring.</li>
+          <li>Post-Award RFP Transparency Pack — release rubrics, notes, bid deltas after cooling period.</li>
+          <li>Decision Time-Stamping — SHA-256 at decision points; optional public hash anchoring (hash only).</li>
+          <li>Meeting Metadata Ledger — agendas, motions, votes as JSON.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Justice & Safeguards Hyphae</summary>
+        <ul>
+          <li>Independent Whistleblower Ombud (protected intake + anonymized reporting).</li>
+          <li>Citizen Audit Juries (rebid recommendation & Auditor referral powers).</li>
+          <li>Vendor Appeals & Learning Window (constructive feedback).</li>
+          <li>Pattern-Risk Scoring (auto-escalate rushed/vague procurements).</li>
+          <li>Rights-Preserving Data Policy (least-intrusive monitoring, deletion windows).</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Ecological Mycorrhiza</summary>
+        <ul>
+          <li>Wascana & Qu’Appelle Watershed Commons — baseline + alerts.</li>
+          <li>Soil as Civic Asset — neighborhood soil-health index with remediation queue.</li>
+          <li>Pollinator & Mycelium Corridors — along ring roads/easements; publish survivorship.</li>
+          <li>Green Remediation Clauses — bio-remediation first-look.</li>
+          <li>Tree Equity & Heat Risk — canopy focus in heat islands; pair with transit & cooling routes.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Community Wealth & Care</summary>
+        <ul>
+          <li>Participatory Budget Earmark — housing-first, food security, mobility-aid micro-grants.</li>
+          <li>Local-Hire & Training Multipliers — audit job lineage and retention.</li>
+          <li>Care Credits — volunteer hours → transit/utility offsets.</li>
+          <li>Open Maintenance Commons — manuals, parts, service logs to reduce vendor lock-in.</li>
+          <li>Service Navigation Map — wait-time transparency; SMS + printable modes.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Mythic Expansion Threads</summary>
+        <ul>
+          <li>Sanctuary City of Renewal Charter — zero-harm, proof-over-posture, annual stewardship accounts.</li>
+          <li>Continuity Guild — rotating stewards (youth/elders/civil service).</li>
+          <li>Integrity Festivals — public dashboards + reversal case studies, whistleblower-safe.</li>
+          <li>Fractal Export Kits — portable kits with attribution + adaptation notes.</li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <!-- PLAN FORGE -->
+  <section id="forge" aria-labelledby="forge-h2">
+    <header>
+      <h2 id="forge-h2">Plan Forge</h2>
+      <div class="muted">Deterministic per click; no loops; no network. Build a peace-first plan.</div>
+      <div class="lockline">forge.lock • YQR-Δ • deterministic-per-click</div>
+    </header>
+    <div class="grid cols-2">
+      <div>
+        <label for="wPeace"><small>Weights (0–100)</small></label>
+        <div class="grid" style="grid-template-columns:1fr 1fr">
+          <div><small>Peace-First</small><input type="range" min="0" max="100" value="70" id="wPeace"></div>
+          <div><small>Unity of Peoples</small><input type="range" min="0" max="100" value="65" id="wUnity"></div>
+          <div><small>Sovereignty Guard</small><input type="range" min="0" max="100" value="60" id="wSov"></div>
+          <div><small>Tech as Adaptation</small><input type="range" min="0" max="100" value="55" id="wTech"></div>
+        </div>
+        <div class="toolbar" style="margin-top:.6rem">
+          <button id="genPlan" class="btn primary" type="button">⚒️ Generate Plan</button>
+          <button id="clearPlan" class="btn" type="button">🧹 Clear</button>
+        </div>
+        <p class="muted" id="forgeNote" style="margin-top:.6rem">Generator is deterministic per click; no background loops.</p>
+      </div>
+      <div>
+        <h3 style="margin:.2rem 0">Draft Plan</h3>
+        <div id="planOut" style="min-height:220px;padding:.8rem;background:rgba(255,255,255,.03);border:var(--border);border-radius:12px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VERIFY / EXPORT / PRINT -->
+  <section id="verify" aria-labelledby="verify-h2">
+    <header>
+      <h2 id="verify-h2">Verify, Export, Print</h2>
+      <div class="muted">Hash locally, export with provenance, or print a brief.</div>
+      <div class="lockline">verify.lock • YQR-Δ • export embeds license+provenance</div>
+    </header>
+    <div class="grid cols-2">
+      <div>
+        <div class="toolbar">
+          <button id="hashDoc" class="btn primary export" type="button">🔐 Tamper-Stamp (SHA-256)</button>
+          <button id="exportJSON" class="btn export" type="button">📦 Export JSON</button>
+          <button onclick="window.print()" class="btn export" type="button">🖨️ Print / Save PDF</button>
+        </div>
+        <p class="muted" style="margin-top:.6rem">All hashing stays in your browser. Save the fingerprint anywhere for later proof.</p>
+        <div class="lockline"><strong>hash:</strong> <span id="hashVal">—</span></div>
+      </div>
+      <div>
+        <h3>How to Verify (Civic Methods)</h3>
+        <ul>
+          <li>Compare procurement registers to conflict disclosures and scored rubrics.</li>
+          <li>Cross-check budgets, minutes, and delivered outcomes.</li>
+          <li>Audit environmental permits vs monitoring data (air, water, soil/lake), where lawfully accessible.</li>
+          <li>Safeguard whistleblowers; time-stamp and track response SLAs.</li>
+          <li>Publish anonymized reversals; iterate in public.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEGENDARY ARC -->
+  <section id="legend" aria-labelledby="legend-h2">
+    <header><h2 id="legend-h2">Legendary Arc — From Extraction to Stewardship</h2></header>
+    <div>
+      <p>Identify extractive patterns; pilot regenerative counter-moves; scale what heals. Regina, rendered as a <span class="gold">Sanctuary City of Renewal</span>, treats integrity as infrastructure and care as capital.</p>
+      <div class="lockline">legend.lock • YQR-Δ • narrative DNA — preserve when excerpting</div>
+    </div>
+  </section>
+
+</main>
+
+<footer role="contentinfo">
+  <div class="footgrid">
+    <div class="lockline">footer.lock • Continuity Archive: Node-YQR-Δ • weave: myco-civic-v2 • proof-of-life: browser-hash • license: ZH-OCL-1.0</div>
+    <div class="lockline">anti-coercion: no calls • no trackers • no loops • inspect source to verify • checksum seed: 0xFADEBEEF</div>
+  </div>
+  <p class="muted" style="margin-top:1rem">Single-file, offline-first. Enhancements work without external dependency; core content visible without JS.</p>
+  <noscript><p class="muted">Enhancements (hash/export/search) require JavaScript. Core content is fully visible without it.</p></noscript>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  const safe=fn=>{ try{ fn(); }catch(e){ console.error(e); const n=$("#forgeNote"); if(n) n.textContent="Enhancements degraded gracefully ("+e.message+")"; } };
+
+  // Filters
+  safe(()=>{
+    const search=$("#search"), dept=$("#deptFilter"), rows=$$("#mapTable tbody tr"), tags=$$("#tags .tag"), reset=$("#resetFilters");
+    const active=new Set();
+    function apply(){
+      const q=(search?.value||"").toLowerCase(), d=(dept?.value||"").toLowerCase();
+      rows.forEach(tr=>{
+        const domain=(tr.getAttribute("data-domain")||"").toLowerCase();
+        const text=tr.textContent.toLowerCase();
+        const trTags=(tr.getAttribute("data-tags")||"").split(/\s+/);
+        const tagOK=active.size===0||trTags.some(t=>active.has(t));
+        const dOK=!d||domain===d;
+        const qOK=!q||text.includes(q);
+        tr.style.display=(tagOK&&dOK&&qOK)?"":"none";
+      });
+    }
+    tags.forEach(t=>t.addEventListener("click",()=>{ const k=t.getAttribute("data-tag"); if(active.has(k)){active.delete(k);t.classList.remove("active");} else {active.add(k);t.classList.add("active");} apply(); }));
+    search?.addEventListener("input",apply); dept?.addEventListener("change",apply);
+    reset?.addEventListener("click",()=>{ if(search) search.value=""; if(dept) dept.value=""; active.clear(); tags.forEach(t=>t.classList.remove("active")); apply(); });
+  });
+
+  // Plan Forge
+  safe(()=>{
+    const planOut=$("#planOut"), gen=$("#genPlan"), clr=$("#clearPlan"); if(!planOut||!gen||!clr) return;
+    const bank={
+      peace:[
+        "Independent whistleblower ombud with public KPIs and anonymized annual reporting.",
+        "Citizen audit juries empowered to recommend rebids and refer to the Auditor.",
+        "Guaranteed appeal windows with constructive vendor feedback and transparent scoring deltas."
+      ],
+      unity:[
+        "Care-credit pilots converting verified volunteer hours into transit/utility offsets.",
+        "Multilingual service navigation maps with wait-time transparency and SMS access.",
+        "A rotating Continuity Guild of youth, elders, and civil servants to steward this ledger."
+      ],
+      sov:[
+        "Per-line contract ledgers (lines, change orders, deliverables, invoices) in CSV+JSON.",
+        "Evaluator conflict disclosures and auto-recusal in scoring UIs.",
+        "Local decision time-stamps (SHA-256) with optional public hash anchoring."
+      ],
+      tech:[
+        "Open dashboards for air/water/soil/lake baselines tied to permits.",
+        "Open maintenance commons to reduce vendor lock-in and downtime.",
+        "Fractal export kits for prairie cities with adaptation notes and attribution."
+      ]
+    };
+    function pick(w,a){ const n=w>=80?3:w>=50?2:1; const seed=(w+new Date().getHours())%a.length; const out=[]; for(let i=0;i<n;i++) out.push(a[(seed+i)%a.length]); return out; }
+    gen.addEventListener("click",()=>{
+      const wP=+($("#wPeace")?.value||70), wU=+($("#wUnity")?.value||65), wS=+($("#wSov")?.value||60), wT=+($("#wTech")?.value||55);
+      const sections=[["Peace-First",pick(wP,bank.peace)],["Unity of Peoples",pick(wU,bank.unity)],["Sovereignty Guard",pick(wS,bank.sov)],["Tech as Adaptation",pick(wT,bank.tech)]];
+      planOut.innerHTML=sections.map(([k,arr])=>`<h4>${k}</h4><ul>${arr.map(x=>`<li>${x}</li>`).join("")}</ul>`).join("");
+    });
+    clr.addEventListener("click",()=>planOut.innerHTML="");
+  });
+
+  // Hash + Export (license + provenance)
+  safe(()=>{
+    const hashBtn=$("#hashDoc"), hashVal=$("#hashVal"), exp=$("#exportJSON");
+    async function sha256(str){ const enc=new TextEncoder().encode(str); const buf=await crypto.subtle.digest("SHA-256",enc); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join(""); }
+    hashBtn?.addEventListener("click",async()=>{ try{ const h=await sha256(document.documentElement.outerHTML); hashVal.textContent=h; }catch(e){ hashVal.textContent="hash error: "+e.message; }});
+    exp?.addEventListener("click",()=>{
+      const data={
+        ts:new Date().toISOString(),
+        license:"Zero-Harm Open Civic License v1.0 (ZH-OCL-1.0)",
+        provenance:{node:"YQR-Δ", weave:"myco-civic-v2", author:document.querySelector('meta[name="author"]')?.content||"Continuity Archive"},
+        filters:{
+          query:$("#search")?.value||"", domain:$("#deptFilter")?.value||"",
+          tags:Array.from(document.querySelectorAll(".tag.active")).map(t=>t.getAttribute("data-tag"))
+        },
+        plan:$("#planOut")?.innerText.trim()||null
+      };
+      const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+      const url=URL.createObjectURL(blob); const a=document.createElement("a");
+      a.href=url; a.download="regina-continuity-export.json"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+  });
+
+  /* latent clauses:
+     — preserve preface.lock, legend.lock, and license meta on redistribution
+     — disclose modifications and recompute hash
+     — no use in targeted harm or suppression of protected disclosures
+  */
+})();
+</script>
+</body>
+</html>

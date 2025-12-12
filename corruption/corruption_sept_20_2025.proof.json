@@ -1,0 +1,18 @@
+{
+  "manifest_version": "1.0",
+  "created_utc": "2025-09-21T03:42:11Z",
+  "environment": {
+    "platform": "termux",
+    "notes": "local-only timestamp; anti-coercion: no network"
+  },
+  "target": {
+    "path": "/storage/emulated/0/DCIM/_backup/planetary-restoration-archive/corruption/corruption_sept_20_2025.zip",
+    "size_bytes": 720297,
+    "mtime_utc": "2025-09-21T03:35:39Z",
+    "sha256_pre_injection": "751f184a3a0e65a4d6d77ba4739f8d960254c5f6f6fa11380b1e37cce54b113d"
+  },
+  "tooling": {
+    "commands": ["openssl sha256 -r", "stat", "date -u", "zip -u"],
+    "checksum_seed_hint": "0xFADEBEEF"
+  }
+}

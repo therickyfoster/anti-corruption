@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Western Canada — Restoration Galactic Index</title>
+<meta name="description" content="A stellar, offline-first index for Western Canada continuity labs. Browse city nodes, preview, verify, and launch regenerative civic kits." />
+<meta name="color-scheme" content="dark light" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<style>
+  :root{
+    --bg:#070912; --ink:#e9f1ff; --muted:#a8b3c9;
+    --panel:#0c1220; --panel-2:#0a1020;
+    --accent:#78e3ff; --accent-2:#8cffb4; --accent-3:#ffd36e;
+    --border:1px solid rgba(255,255,255,.08);
+    --radius:18px; --shadow:0 18px 60px rgba(0,0,0,.45);
+    --card-grad: conic-gradient(from 210deg at 30% 10%, rgba(120,227,255,.08), rgba(140,255,180,.08), rgba(255,211,110,.08), rgba(120,227,255,.08));
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#f7fbff; --ink:#0b1624; --muted:#536173; --panel:#e9f1fa; --panel-2:#dde8f5;
+      --border:1px solid rgba(0,0,0,.06); --shadow:0 10px 30px rgba(0,0,0,.08);
+      --card-grad: linear-gradient(180deg,rgba(120,227,255,.14),rgba(140,255,180,.10));
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 30% -10%, rgba(120,227,255,.06), transparent 60%),
+      radial-gradient(1400px 900px at 90% 120%, rgba(140,255,180,.05), transparent 60%),
+      linear-gradient(180deg,var(--bg),#05070d 80%);
+    color:var(--ink);
+    font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica Neue,Arial
+  }
+  a{color:var(--accent)}
+  code,kbd{background:rgba(255,255,255,.07);padding:.2rem .4rem;border-radius:10px}
+
+  /* starfield */
+  .stars,.stars2,.stars3{position:fixed;inset:0;pointer-events:none;z-index:-1}
+  .stars{background:
+     radial-gradient(1px 1px at 20% 30%,#fff,transparent 60%),
+     radial-gradient(1px 1px at 80% 60%,#fff,transparent 60%),
+     radial-gradient(1px 1px at 60% 80%,#fff,transparent 60%);opacity:.25;animation:twinkle 11s linear infinite}
+  .stars2{background:
+     radial-gradient(1px 1px at 40% 70%,#fff,transparent 60%),
+     radial-gradient(1px 1px at 10% 50%,#fff,transparent 60%),
+     radial-gradient(1px 1px at 90% 20%,#fff,transparent 60%);opacity:.15;animation:twinkle 17s linear infinite reverse}
+  .stars3{background:
+     radial-gradient(1px 1px at 65% 40%,#fff,transparent 60%),
+     radial-gradient(1px 1px at 35% 85%,#fff,transparent 60%);opacity:.1;animation:twinkle 23s linear infinite}
+  @keyframes twinkle{0%,100%{filter:brightness(.9)}50%{filter:brightness(1.15)}}
+
+  header.hero{padding:6rem 1.25rem 3rem; text-align:center; position:relative; overflow:hidden}
+  header.hero h1{margin:0; font-size:clamp(1.8rem,3.5vw + 1rem,3.4rem); letter-spacing:.4px; color:var(--accent)}
+  header.hero p{max-width:980px;margin:.8rem auto 0;color:var(--muted)}
+  .cta{margin-top:1.2rem;display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+  .btn{border:var(--border); background:linear-gradient(180deg,var(--panel),var(--panel-2));
+       color:var(--ink); padding:.8rem 1rem; border-radius:14px; box-shadow:var(--shadow);
+       text-decoration:none; display:inline-flex; align-items:center; gap:.55rem; cursor:pointer}
+  .btn.primary{border-color:rgba(120,227,255,.5)}
+  .chip{display:inline-block;padding:.25rem .6rem;border-radius:999px;border:var(--border);color:var(--muted);margin:.2rem .25rem}
+
+  main{max-width:1200px;margin:auto;padding:0 1.25rem 4rem}
+  .toolbar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;margin:.8rem 0 1.2rem}
+  .toolbar .left,.toolbar .right{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+  .toolbar input,.toolbar select,.toolbar button{background:rgba(255,255,255,.06);color:var(--ink);border:var(--border);border-radius:12px;padding:.6rem .75rem;outline:none}
+  .toolbar input{min-width:240px}
+  .toolbar .kbd{color:var(--muted);font-size:.85rem}
+
+  .grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+  .card{position:relative; border:var(--border); border-radius:20px; overflow:hidden; background:var(--card-grad), linear-gradient(180deg,var(--panel),var(--panel-2)); box-shadow:var(--shadow); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}
+  .card:hover{transform:translateY(-2px); box-shadow:0 20px 70px rgba(120,227,255,.20); border-color:rgba(120,227,255,.45)}
+  .card .head{padding:1rem 1rem .4rem}
+  .card h3{margin:.1rem 0 .2rem; font-weight:700; letter-spacing:.2px}
+  .meta{display:flex; gap:.4rem; flex-wrap:wrap}
+  .meta .tag{padding:.18rem .55rem; border:var(--border); border-radius:999px; color:var(--muted); font-size:.85rem}
+  .card .body{padding:0 1rem 1rem; color:var(--muted)}
+  .card .actions{display:flex; gap:.5rem; padding:0 1rem 1rem; flex-wrap:wrap}
+  .small{font-size:.9rem}
+  .favorite[aria-pressed="true"]{outline:2px solid var(--accent-3)}
+
+  .modal{position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.6); backdrop-filter:blur(6px)}
+  .modal.open{display:grid}
+  .modal .sheet{width:min(1100px,96vw); height:min(720px,86vh); background:linear-gradient(180deg,var(--panel),var(--panel-2)); border:var(--border); border-radius:18px; box-shadow:var(--shadow); display:grid; grid-template-rows:auto 1fr}
+  .sheet header{display:flex; align-items:center; justify-content:space-between; padding:.6rem .8rem; border-bottom:var(--border)}
+  .sheet header .title{display:flex; align-items:center; gap:.6rem}
+  .sheet iframe{width:100%; height:100%; border:0; background:#fff}
+  .iconbtn{display:inline-flex; align-items:center; gap:.4rem; border:var(--border); background:rgba(255,255,255,.04); color:var(--ink); padding:.45rem .65rem; border-radius:10px; cursor:pointer}
+  .iconbtn:focus-visible{outline:2px solid var(--accent)}
+
+  footer{padding:2rem 1rem; text-align:center; color:var(--muted)}
+  .footgrid{display:grid;gap:.6rem}
+  @media(min-width:780px){.footgrid{grid-template-columns:1fr 1fr}}
+  .lockline{font-family:ui-monospace, Menlo, Consolas, monospace; font-size:.85rem; color:var(--muted);
+            background:repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0 22px,rgba(120,227,255,.03) 22px 44px);
+            padding:.6rem;border-radius:12px;border:var(--border);user-select:text}
+
+  .notice{margin:.8rem 0; color:var(--muted)}
+  details{border:var(--border);border-radius:12px;padding:.6rem .8rem;margin:.6rem 0;background:rgba(255,255,255,.03)}
+  details[open]{background:rgba(140,255,180,.06)}
+  summary{cursor:pointer;font-weight:600}
+
+  @media print{
+    .toolbar,.modal,.cta,.kbd{display:none!important}
+    body,section,header.hero,.card{background:#fff!important;color:#000!important;box-shadow:none!important}
+    a{color:#000!important;text-decoration:underline}
+  }
+</style>
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+<div class="stars2" aria-hidden="true"></div>
+<div class="stars3" aria-hidden="true"></div>
+
+<header class="hero" role="banner" aria-label="Restoration Galactic Index — Western Canada">
+  <h1>Western Canada — Restoration Galactic Index</h1>
+  <p class="small">Navigate the civic mycelium. Each card launches a city’s <em>Continuity Lab</em> (offline-first, zero-harm). Works fully without JavaScript; enhancements add preview, favorites, export, and a tamper-stamp.</p>
+  <div class="cta">
+    <a href="#grid" class="btn primary">🚀 Enter Sector</a>
+    <button id="stamp" class="btn">🔐 Tamper-Stamp</button>
+    <button id="export" class="btn">📦 Export Listing JSON</button>
+    <button onclick="window.print()" class="btn">🖨️ Print / Save PDF</button>
+  </div>
+  <div>
+    <span class="chip">Peace-First</span><span class="chip">Unity of Peoples</span><span class="chip">Sovereignty Guard</span><span class="chip">Tech as Adaptation</span>
+  </div>
+</header>
+
+<main id="grid" role="main" aria-label="City nodes">
+  <div class="toolbar" role="region" aria-label="Filters and options">
+    <div class="left">
+      <input id="q" type="search" placeholder="Search city, province, tags…" aria-label="Search cities" />
+      <select id="prov" aria-label="Filter by province">
+        <option value="">All provinces</option>
+        <option value="AB">Alberta</option>
+        <option value="BC">British Columbia</option>
+      </select>
+      <select id="sort" aria-label="Sort">
+        <option value="name">Sort: Name</option>
+        <option value="recent">Sort: Recently Viewed</option>
+        <option value="fav">Sort: Favorites</option>
+      </select>
+    </div>
+    <div class="right">
+      <button id="clear" class="iconbtn" type="button">Clear</button>
+      <span class="kbd" aria-hidden="true">Shortcuts: <kbd>/</kbd> search, <kbd>⏎</kbd> open, <kbd>F</kbd> fav, <kbd>Esc</kbd> close preview</span>
+    </div>
+  </div>
+
+  <noscript>
+    <ul>
+      <li><a href="../ab/edm/index.html">Edmonton, AB</a></li>
+      <li><a href="../ab/cal/index.html">Calgary, AB</a></li>
+      <li><a href="../ab/rd/index.html">Red Deer, AB</a></li>
+      <li><a href="../ab/mdh/index.html">Medicine Hat, AB</a></li>
+      <li><a href="../bc/van/index.html">Vancouver, BC</a></li>
+      <li><a href="../bc/vic/index.html">Victoria, BC</a></li>
+      <li><a href="../bc/kel/index.html">Kelowna, BC</a></li>
+      <li><a href="../bc/pg/index.html">Prince George, BC</a></li>
+    </ul>
+  </noscript>
+
+  <section id="cards" class="grid" aria-live="polite" aria-busy="false"></section>
+
+  <p class="notice small">Paths assume this file lives at <code>/corruption/na/ca/wc/index.html</code> and each city lives at <code>/corruption/na/ca/{ab|bc}/{slug}/index.html</code>. Adjust the <code>DATA.cities</code> array if you change slugs.</p>
+
+  <details>
+    <summary>How to add a new city card</summary>
+    <ol class="small">
+      <li>Create <code>/corruption/na/ca/&lt;prov&gt;/&lt;slug&gt;/index.html</code> for the city.</li>
+      <li>Edit <code>DATA.cities</code> below with <code>name</code>, <code>prov</code>, <code>path</code>, and optional <code>tags</code>.</li>
+      <li>Reload. You’ll see the new card; preview (👁️), favorite (⭐), or launch (🚀).</li>
+    </ol>
+  </details>
+</main>
+
+<footer role="contentinfo">
+  <div class="footgrid">
+    <div class="lockline">sector.lock: <strong>WC-Δ</strong> | weave: myco-civic-v2 | checksum seed: 0xFADEBEEF</div>
+    <div class="lockline">continuity note: single-file, offline-first; enhancements degrade gracefully; index favors safety over spectacle</div>
+  </div>
+  <p class="small" style="margin-top:.75rem">No external calls. Hashes are computed locally in your browser.</p>
+</footer>
+
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title" aria-describedby="m-desc">
+  <div class="sheet">
+    <header>
+      <div class="title">
+        <strong id="m-title">Preview</strong>
+        <span id="m-desc" class="small muted">Sandboxed preview of the selected city page</span>
+      </div>
+      <div class="actions">
+        <button id="m-open" class="iconbtn" type="button" title="Open full page">Open</button>
+        <button id="m-close" class="iconbtn" type="button" title="Close">Close</button>
+      </div>
+    </header>
+    <iframe id="m-frame" sandbox="allow-same-origin allow-scripts" referrerpolicy="no-referrer"></iframe>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $ = (s, r=document)=>r.querySelector(s);
+  const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+  const safe = fn => { try{ fn(); }catch(e){ console.error(e); } };
+
+  const DATA = {
+    // NOTE: these are relative to /corruption/na/ca/wc/index.html
+    cities: [
+      {name:"Edmonton",     prov:"AB", path:"../ab/edm/index.html", node:"YEG", tags:["capital","infrastructure"]},
+      {name:"Calgary",      prov:"AB", path:"../ab/cal/index.html", node:"YYC", tags:["finance","transit"]},
+      {name:"Red Deer",     prov:"AB", path:"../ab/rd/index.html",  node:"YQF", tags:["midway","logistics"]},
+      {name:"Medicine Hat", prov:"AB", path:"../ab/mdh/index.html", node:"YXH", tags:["energy","prairie"]},
+      {name:"Vancouver",    prov:"BC", path:"../bc/van/index.html", node:"YVR", tags:["coast","port","housing"]},
+      {name:"Victoria",     prov:"BC", path:"../bc/vic/index.html", node:"YYJ", tags:["capital","coast"]},
+      {name:"Kelowna",      prov:"BC", path:"../bc/kel/index.html", node:"YLW", tags:["okanagan","growth"]},
+      {name:"Prince George",prov:"BC", path:"../bc/pg/index.html",  node:"YXS", tags:["north","forestry"]}
+    ]
+  };
+
+  const state = {
+    q:"", prov:"", sort:"name",
+    favorites: new Set(JSON.parse(localStorage.getItem("wc.favs")||"[]")),
+    lastViewed: JSON.parse(localStorage.getItem("wc.lastViewed")||"{}")
+  };
+
+  function render(){
+    const list = DATA.cities.slice();
+    const q = state.q.trim().toLowerCase();
+    const prov = state.prov;
+    let filtered = list.filter(c=>{
+      const provOK = !prov || c.prov===prov;
+      const text = (c.name+" "+c.prov+" "+(c.tags||[]).join(" ")).toLowerCase();
+      const qOK = !q || text.includes(q);
+      return provOK && qOK;
+    });
+    if(state.sort==="fav"){
+      filtered.sort((a,b)=>{
+        const af = state.favorites.has(a.path)?1:0;
+        const bf = state.favorites.has(b.path)?1:0;
+        if(bf!==af) return bf-af;
+        return a.name.localeCompare(b.name);
+      });
+    }else if(state.sort==="recent"){
+      filtered.sort((a,b)=>{
+        const at = state.lastViewed[a.path]?Date.parse(state.lastViewed[a.path]):0;
+        const bt = state.lastViewed[b.path]?Date.parse(state.lastViewed[b.path]):0;
+        if(bt!==at) return bt-at;
+        return a.name.localeCompare(b.name);
+      });
+    }else{
+      filtered.sort((a,b)=>a.name.localeCompare(b.name));
+    }
+
+    const grid = $("#cards");
+    grid.setAttribute("aria-busy","true");
+    grid.innerHTML = filtered.map(cardHTML).join("");
+    grid.setAttribute("aria-busy","false");
+
+    $$(".card .open").forEach(btn=>{
+      btn.addEventListener("click", e=>{
+        const path = e.currentTarget.getAttribute("data-path");
+        openPreview(path);
+      });
+    });
+    $$(".card .launch").forEach(btn=>{
+      btn.addEventListener("click", e=>{
+        const path = e.currentTarget.getAttribute("data-path");
+        trackViewed(path);
+        location.href = path;
+      });
+    });
+    $$(".card .favorite").forEach(btn=>{
+      btn.addEventListener("click", e=>{
+        const path = e.currentTarget.getAttribute("data-path");
+        const pressed = e.currentTarget.getAttribute("aria-pressed")==="true";
+        if(pressed){ state.favorites.delete(path); }
+        else{ state.favorites.add(path); }
+        localStorage.setItem("wc.favs", JSON.stringify(Array.from(state.favorites)));
+        render();
+      });
+    });
+  }
+
+  function cardHTML(c){
+    const fav = state.favorites.has(c.path);
+    const last = state.lastViewed[c.path] ? new Date(state.lastViewed[c.path]).toLocaleString() : "—";
+    const tags = (c.tags||[]).map(t=>`<span class="tag">#${escapeHTML(t)}</span>`).join(" ");
+    return `
+      <article class="card" tabindex="0" data-path="${escapeAttr(c.path)}" aria-label="${escapeAttr(c.name)}, ${escapeAttr(c.prov)}">
+        <div class="head">
+          <h3>${escapeHTML(c.name)} <span class="small" style="color:var(--muted)">(${escapeHTML(c.prov)})</span></h3>
+          <div class="meta">
+            <span class="tag">node:${escapeHTML(c.node)}</span>
+            ${tags}
+          </div>
+        </div>
+        <div class="body small">
+          <div><span class="muted">Last viewed:</span> ${escapeHTML(last)}</div>
+        </div>
+        <div class="actions">
+          <button class="iconbtn open"   data-path="${escapeAttr(c.path)}"  title="Preview in modal">👁️ Preview</button>
+          <button class="iconbtn launch" data-path="${escapeAttr(c.path)}"  title="Open full page">🚀 Open</button>
+          <button class="iconbtn favorite" aria-pressed="${fav}" data-path="${escapeAttr(c.path)}" title="Toggle favorite">⭐ Fav</button>
+        </div>
+      </article>
+    `;
+  }
+
+  // Search & filters
+  safe(()=>{
+    $("#q")?.addEventListener("input", e=>{ state.q = e.target.value; render(); });
+    $("#prov")?.addEventListener("change", e=>{ state.prov = e.target.value; render(); });
+    $("#sort")?.addEventListener("change", e=>{ state.sort = e.target.value; render(); });
+    $("#clear")?.addEventListener("click", ()=>{
+      state.q=""; state.prov=""; state.sort="name";
+      $("#q").value=""; $("#prov").value=""; $("#sort").value="name";
+      render();
+    });
+    window.addEventListener("keydown", (e)=>{
+      if(e.key==="/" && document.activeElement.tagName!=="INPUT"){ e.preventDefault(); $("#q")?.focus(); }
+      if(e.key.toLowerCase()==="f" && document.activeElement.closest(".card")){
+        const path = document.activeElement.getAttribute("data-path");
+        if(!path) return;
+        e.preventDefault();
+        if(state.favorites.has(path)) state.favorites.delete(path); else state.favorites.add(path);
+        localStorage.setItem("wc.favs", JSON.stringify(Array.from(state.favorites)));
+        render();
+      }
+      if(e.key==="Enter" && document.activeElement.closest(".card")){
+        const path = document.activeElement.getAttribute("data-path");
+        if(path){ trackViewed(path); location.href = path; }
+      }
+    });
+  });
+
+  // Modal preview
+  const modal = $("#modal"), frame=$("#m-frame"), mOpen=$("#m-open"), mClose=$("#m-close");
+  function openPreview(path){
+    modal.classList.add("open");
+    frame.src = path;
+    mOpen.onclick = ()=>{ trackViewed(path); location.href = path; };
+    mClose.onclick = closePreview;
+    modal.addEventListener("click", (e)=>{ if(e.target===modal) closePreview(); }, {once:true});
+    window.addEventListener("keydown", escOnce);
+  }
+  function closePreview(){
+    modal.classList.remove("open");
+    frame.src = "about:blank";
+    window.removeEventListener("keydown", escOnce);
+  }
+  function escOnce(e){ if(e.key==="Escape") closePreview(); }
+
+  function trackViewed(path){
+    state.lastViewed[path] = new Date().toISOString();
+    localStorage.setItem("wc.lastViewed", JSON.stringify(state.lastViewed));
+  }
+
+  $("#export")?.addEventListener("click", ()=>{
+    const out = { ts:new Date().toISOString(), sector:"WC-Δ", cities: DATA.cities, favs: Array.from(state.favorites) };
+    const blob = new Blob([JSON.stringify(out,null,2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "wc-galactic-index.json";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  $("#stamp")?.addEventListener("click", async ()=>{
+    const el = document.createElement("div");
+    el.className = "lockline"; el.style.margin = ".8rem auto"; el.style.maxWidth = "980px";
+    el.textContent = "computing hash…";
+    document.body.appendChild(el);
+    try{
+      const html = document.documentElement.outerHTML;
+      const hash = await sha256(html);
+      el.innerHTML = "<strong>hash:</strong> " + hash;
+    }catch(e){
+      el.textContent = "hash error: " + e.message;
+    }
+    setTimeout(()=>{ el.scrollIntoView({behavior:"smooth", block:"center"}); }, 80);
+  });
+
+  async function sha256(str){
+    const enc = new TextEncoder().encode(str);
+    const buf = await crypto.subtle.digest("SHA-256", enc);
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  }
+  function escapeHTML(s){ return String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+  function escapeAttr(s){ return String(s).replace(/"/g,"&quot;"); }
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Planetary Restoration Archive — Corruption Hub</title>
+  <meta name="description" content="Signal-Power Dossiers: an offline-first hub linking country dossiers with search, filters, and resilient UX." />
+  <!-- Embedded PWA manifest (no external files) -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"PRA — Corruption Hub","short_name":"PRA Hub","start_url":"./","display":"standalone"}' />
+
+  <style>
+    :root{
+      --bg:#0a0a0b; --fg:#e8e9ed; --muted:#9ba0a8; --accent:#64ffda;
+      --ink:#0f1419; --paper:#ffffff; --card:#131318; --line:#2a2d33;
+      --focus:#ffd54f; --danger:#ff5252; --ok:#4caf50; --warn:#ff9800;
+      --radius:20px; --pad:20px;
+      --shadow:0 12px 32px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.2);
+      --gradient:linear-gradient(135deg, var(--accent) 0%, #3d5afe 100%);
+      --card-gradient:linear-gradient(145deg, var(--card) 0%, rgba(100,255,218,.03) 100%);
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f8fafc; --fg:#1a202c; --muted:#4a5568; --card:#ffffff; --line:#e2e8f0; --accent:#00bcd4;
+        --shadow:0 12px 32px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
+        --card-gradient:linear-gradient(145deg, var(--card) 0%, rgba(0,188,212,.02) 100%);
+      }
+    }
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,Arial,sans-serif;
+      text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      background-image:
+        radial-gradient(circle at 25% 25%, rgba(100,255,218,.05) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(61,90,254,.05) 0%, transparent 50%);
+    }
+    a{ color:var(--accent); text-decoration:none }
+    a:hover{ text-decoration:underline }
+    a:focus-visible{ outline:3px solid var(--focus); outline-offset:3px }
+
+    main{ inline-size:min(100%,1400px); margin:0 auto; padding:clamp(16px,3vw,32px) }
+
+    header.site{
+      display:grid; gap:16px; padding:clamp(24px,4vw,40px);
+      border:1px solid var(--line); border-radius:var(--radius);
+      background:var(--card-gradient); box-shadow:var(--shadow);
+      container-type:inline-size; position:relative; overflow:hidden;
+    }
+    header.site::before{ content:""; position:absolute; inset:0; background:var(--gradient); opacity:.03; pointer-events:none }
+    header.site h1{
+      margin:0; font-size:clamp(26px,5cqi + 1rem,48px); letter-spacing:-.02em; font-weight:800;
+      background:var(--gradient); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    header.site p{ margin:0; color:var(--muted); font-size:1.05rem }
+
+    .toolbar{
+      display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;
+      backdrop-filter:blur(8px); padding:12px; border-radius:16px;
+      background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+    }
+    .toolbar .left,.toolbar .right{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+    .tag{ border:1px solid var(--accent); padding:6px 12px; border-radius:999px; color:var(--accent); font-size:.9rem; font-weight:600; background:rgba(100,255,218,.1) }
+
+    button,.btn{
+      appearance:none; border:1px solid var(--line); background:var(--card); color:var(--fg);
+      padding:10px 16px; border-radius:12px; cursor:pointer; font-weight:600;
+      transition:transform .2s, box-shadow .2s, border-color .2s;
+    }
+    button:hover,.btn:hover{ transform:translateY(-2px); box-shadow:0 0 20px rgba(100,255,218,.15), var(--shadow); border-color:var(--accent) }
+    button:focus-visible{ outline:3px solid var(--focus); outline-offset:2px }
+
+    /* Controls */
+    .controls{ display:grid; gap:12px; grid-template-columns:1fr; margin:16px 0 }
+    @container (min-width: 900px){
+      .controls{ grid-template-columns: 1fr 300px 220px }
+    }
+    .control{
+      display:flex; align-items:center; gap:8px; background:var(--card);
+      border:1px solid var(--line); border-radius:14px; padding:10px 12px;
+    }
+    .control input, .control select{
+      flex:1; background:transparent; border:none; color:var(--fg); font-size:1rem; outline:none;
+    }
+    .kbd{ font:600 .85rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; border:1px solid var(--line); border-radius:6px; padding:3px 8px; background:var(--card); color:var(--accent) }
+
+    /* Grid */
+    .grid{ display:grid; gap:16px; margin-top:18px }
+    @container (min-width: 720px){ .grid{ grid-template-columns: repeat(2, 1fr) } }
+    @container (min-width: 1100px){ .grid{ grid-template-columns: repeat(3, 1fr) } }
+    @container (min-width: 1400px){ .grid{ grid-template-columns: repeat(4, 1fr) } }
+
+    .card{
+      position:relative; overflow:hidden; border:1px solid var(--line); border-radius:18px; background:var(--card-gradient);
+      padding:16px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:8px; min-height:160px;
+      transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .card:hover{ transform:translateY(-3px); box-shadow:0 0 20px rgba(100,255,218,.12), var(--shadow); border-color:rgba(100,255,218,.3) }
+    .flag{ font-size:1.4rem }
+    .title{ font-weight:800; letter-spacing:-.01em; font-size:1.15rem; margin:0 }
+    .desc{ color:var(--muted); font-size:.95rem; margin:0 }
+    .meta{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; font-size:.9rem; color:var(--muted) }
+    .risk{ font-weight:700; padding:2px 8px; border-radius:999px; color:#fff }
+    .risk-high{ background:var(--danger) } .risk-med{ background:var(--warn) } .risk-low{ background:var(--ok) }
+    .chip{ border:1px solid var(--line); border-radius:999px; padding:2px 8px; font-size:.85rem }
+    .card a.primary{
+      margin-top:auto; align-self:flex-start; border:1px solid var(--accent); color:var(--accent);
+      padding:8px 12px; border-radius:10px; text-decoration:none; font-weight:700;
+    }
+    .card a.primary:hover{ background:rgba(100,255,218,.08) }
+    .alt{ font-size:.9rem }
+    .sep{ height:1px; background:var(--line); margin:6px 0 }
+
+    footer.foot{ color:var(--muted); font-size:.9rem; margin-block:28px }
+
+    @media print{
+      .toolbar, .controls, .hide-print{ display:none!important }
+      body{ background:#fff; color:#000 }
+      header.site, .card{ box-shadow:none }
+      a{ color:#000; text-decoration:underline }
+    }
+    ::view-transition-group(root){ animation-duration:.3s }
+    @media (prefers-reduced-motion: reduce){ *{ animation:none!important; transition:none!important; scroll-behavior:auto!important } }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="site" role="banner" aria-labelledby="title">
+      <div class="toolbar">
+        <div class="left">
+          <span class="tag">Planetary Restoration Archive</span>
+          <span class="tag">Signal-Power Dossiers</span>
+        </div>
+        <div class="right">
+          <button id="theme" aria-pressed="false" aria-label="Toggle theme"><span class="kbd">T</span> Theme</button>
+          <button id="print" class="hide-print" aria-label="Print hub"><span class="kbd">⌘/Ctrl+P</span> Print</button>
+        </div>
+      </div>
+      <h1 id="title">Corruption & Signal-Power Hub</h1>
+      <p>Navigation hub for country dossiers. Search, filter, and open each index in a clean, offline-first shell. Designed for mirroring to IPFS/Arweave and long-horizon stewardship.</p>
+
+      <div class="controls" role="region" aria-label="Filters">
+        <div class="control" role="search">
+          <span class="kbd">/</span>
+          <input id="q" type="search" placeholder="Search country, risks, entities…" autocomplete="off" />
+        </div>
+        <div class="control">
+          <label for="region" class="sr-only">Region</label>
+          <select id="region" aria-label="Region filter">
+            <option value="">All regions</option>
+            <option>Africa</option>
+            <option>Americas</option>
+            <option>Asia</option>
+            <option>Europe</option>
+            <option>Middle East</option>
+            <option>Oceania</option>
+          </select>
+        </div>
+        <div class="control">
+          <label for="risk" class="sr-only">Risk</label>
+          <select id="risk" aria-label="Risk filter">
+            <option value="">All risks</option>
+            <option value="high">High</option>
+            <option value="med">Moderate</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <!-- Card grid -->
+    <section class="grid" id="cards" aria-live="polite" aria-busy="false">
+      <!-- Americas -->
+      <article class="card" data-name="United States" data-region="Americas" data-risk="high" data-tags="telecom,data brokers,platforms,spyware,hemisphere,ss7">
+        <div class="meta"><span class="flag">🇺🇸</span><span class="chip">Americas</span><span class="risk risk-high">High</span></div>
+        <h2 class="title">United States</h2>
+        <p class="desc">Mercenary spyware, telecom intelligence programs, data broker procurement, platform governance capture.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./united_states/">Open dossier</a>
+      </article>
+
+      <article class="card" data-name="Canada" data-region="Americas" data-risk="med" data-tags="telecom,governance,oversight,procurement">
+        <div class="meta"><span class="flag">🇨🇦</span><span class="chip">Americas</span><span class="risk risk-med">Moderate</span></div>
+        <h2 class="title">Canada</h2>
+        <p class="desc">Signal-power interfaces, carrier obligations, and procurement transparency levers aligned to Five-Eyes norms.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./canada/">Open dossier</a>
+      </article>
+
+      <!-- Europe / Eurasia -->
+      <article class="card" data-name="United Kingdom" data-region="Europe" data-risk="med" data-tags="five eyes,telecom,platforms,oversight,lawful access">
+        <div class="meta"><span class="flag">🇬🇧</span><span class="chip">Europe</span><span class="risk risk-med">Moderate</span></div>
+        <h2 class="title">United Kingdom</h2>
+        <p class="desc">Investigatory Powers Act scope, Five-Eyes posture, platform transparency tensions, telecom obligations.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./united_kingdom/">Open dossier</a>
+      </article>
+
+      <article class="card" data-name="European Union" data-region="Europe" data-risk="med" data-tags="gdpr,telecom,platform regulation,oversight,data flows,dsa">
+        <div class="meta"><span class="flag">🇪🇺</span><span class="chip">Europe</span><span class="risk risk-med">Moderate</span></div>
+        <h2 class="title">European Union</h2>
+        <p class="desc">GDPR enforcement baselines, DSA effect on platforms, corridor harmonization, and data sovereignty levers.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./european_union/">Open dossier</a>
+      </article>
+
+      <article class="card" data-name="Ukraine" data-region="Europe" data-risk="high" data-tags="war,telecom corridors,platform operations,interdiction">
+        <div class="meta"><span class="flag">🇺🇦</span><span class="chip">Europe</span><span class="risk risk-high">High</span></div>
+        <h2 class="title">Ukraine</h2>
+        <p class="desc">Wartime comms corridors, platform moderation asymmetries, infrastructure interdiction risks.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./ukraine/">Open dossier</a>
+      </article>
+
+      <article class="card" data-name="Russia" data-region="Europe" data-risk="high" data-tags="platform controls,telecom control,data brokers,export controls">
+        <div class="meta"><span class="flag">🇷🇺</span><span class="chip">Europe</span><span class="risk risk-high">High</span></div>
+        <h2 class="title">Russia</h2>
+        <p class="desc">Centralized gateways, wartime controls, brokered data channels, and platform-reach dynamics.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./russia/">Open dossier</a>
+      </article>
+
+      <!-- Middle East / Asia -->
+      <article class="card" data-name="Israel" data-region="Middle East" data-risk="high" data-tags="spyware,platforms,telecom corridors,governance,export controls">
+        <div class="meta"><span class="flag">🇮🇱</span><span class="chip">Middle East</span><span class="risk risk-high">High</span></div>
+        <h2 class="title">Israel</h2>
+        <p class="desc">Export-control tensions, mercenary-ware ecosystem, and platform/legal oversight collisions.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./israel/">Open dossier</a>
+      </article>
+
+      <article class="card" data-name="Taiwan" data-region="Asia" data-risk="high" data-tags="cross-strait,telecom corridors,platform operations,maritime cables">
+        <div class="meta"><span class="flag">🇹🇼</span><span class="chip">Asia</span><span class="risk risk-high">High</span></div>
+        <h2 class="title">Taiwan</h2>
+        <p class="desc">Cross-strait signaling risk, cable resilience, platform coordination, and emergency corridors.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./taiwan/">Open dossier</a>
+      </article>
+
+      <article class="card" data-name="China" data-region="Asia" data-risk="high" data-tags="ixp,ss7,platform governance,data brokers,roaming">
+        <div class="meta"><span class="flag">🇨🇳</span><span class="chip">Asia</span><span class="risk risk-high">High</span></div>
+        <h2 class="title">China</h2>
+        <p class="desc">Gateway centralization, SS7/Diameter exposure, SDK telemetry chains, and platform governance vectors.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./china/">Open dossier</a>
+        <div class="alt">中文：<a href="./china/traditional/">繁體版</a></div>
+      </article>
+
+      <article class="card" data-name="North Korea" data-region="Asia" data-risk="high" data-tags="satcom,ixp isolation,platform isolation,roaming">
+        <div class="meta"><span class="flag">🇰🇵</span><span class="chip">Asia</span><span class="risk risk-high">High</span></div>
+        <h2 class="title">North Korea</h2>
+        <p class="desc">Isolated gateways, satcom dependencies, and high asymmetry in lawful process and platform reach.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./north_korea/">Open dossier</a>
+      </article>
+
+      <!-- Africa -->
+      <article class="card" data-name="Sudan" data-region="Africa" data-risk="high" data-tags="conflict,shutdowns,telecom corridors,platform manipulation,humanitarian">
+        <div class="meta"><span class="flag">🇸🇩</span><span class="chip">Africa</span><span class="risk risk-high">High</span></div>
+        <h2 class="title">Sudan</h2>
+        <p class="desc">Conflict-driven shutdowns, corridor targeting, data-broker leakage, and humanitarian comms safeguards.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./sudan/">Open dossier</a>
+      </article>
+
+      <!-- Oceania -->
+      <article class="card" data-name="Australia" data-region="Oceania" data-risk="med" data-tags="telecom,lawful access,platform governance,signals,oversight">
+        <div class="meta"><span class="flag">🇦🇺</span><span class="chip">Oceania</span><span class="risk risk-med">Moderate</span></div>
+        <h2 class="title">Australia</h2>
+        <p class="desc">Lawful access envelope, carrier obligations, platform transparency levers, and regional cable corridors.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./australia/">Open dossier</a>
+      </article>
+
+      <article class="card" data-name="New Zealand" data-region="Oceania" data-risk="low" data-tags="five eyes,oversight,platform governance,telecom">
+        <div class="meta"><span class="flag">🇳🇿</span><span class="chip">Oceania</span><span class="risk risk-low">Low</span></div>
+        <h2 class="title">New Zealand</h2>
+        <p class="desc">Oversight-forward posture, platform cooperation baselines, and cable resilience across the Tasman corridor.</p>
+        <div class="sep"></div>
+        <a class="primary" href="./new_zealand/">Open dossier</a>
+      </article>
+    </section>
+
+    <footer class="foot" role="contentinfo">
+      <p><strong>PRA Corruption Hub v1.3</strong> — Offline-first, keyboardable, print-friendly. Shortcuts: <span class="kbd">T</span> theme, <span class="kbd">/</span> search, <span class="kbd">⌘/Ctrl+P</span> print.</p>
+    </footer>
+  </main>
+
+  <script>
+    // View Transitions (progressive)
+    const runVT = ('startViewTransition' in document);
+    const root = document.documentElement;
+
+    // Theme cycle: system → light → dark → system
+    const themeBtn = document.getElementById('theme');
+    const cycle = {system:'light', light:'dark', dark:'system'};
+    function setTheme(next){
+      const apply = ()=> root.setAttribute('data-theme', next);
+      runVT ? document.startViewTransition(apply) : apply();
+      try { localStorage.setItem('pra-theme', next); } catch {}
+      themeBtn.setAttribute('aria-pressed', String(next!=='system'));
+    }
+    setTheme(localStorage.getItem('pra-theme') || 'system');
+    themeBtn.addEventListener('click', ()=> setTheme(cycle[root.getAttribute('data-theme')]));
+
+    // Print
+    document.getElementById('print').addEventListener('click', ()=> window.print());
+
+    // Search & filters
+    const q = document.getElementById('q');
+    const region = document.getElementById('region');
+    const risk = document.getElementById('risk');
+    const cards = Array.from(document.querySelectorAll('#cards .card'));
+
+    function applyFilters(){
+      const text = (q.value || '').trim().toLowerCase();
+      const rgn = region.value;
+      const rsk = risk.value;
+      cards.forEach(card=>{
+        const name = (card.dataset.name||'').toLowerCase();
+        const tags = (card.dataset.tags||'').toLowerCase();
+        const matchText = !text || name.includes(text) || tags.includes(text) || card.innerText.toLowerCase().includes(text);
+        const matchRegion = !rgn || card.dataset.region === rgn;
+        const matchRisk = !rsk || card.dataset.risk === rsk;
+        card.style.display = (matchText && matchRegion && matchRisk) ? '' : 'none';
+      });
+      document.getElementById('cards').setAttribute('aria-busy','false');
+      document.getElementById('cards').setAttribute('aria-live','polite');
+    }
+    [q,region,risk].forEach(el=> el.addEventListener('input', applyFilters));
+
+    // Keyboard "/" to focus search
+    document.addEventListener('keydown', (e)=>{
+      if(e.key==='/' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName!=='INPUT'){
+        e.preventDefault(); q.focus();
+      }
+    });
+
+    // First paint
+    applyFilters();
+
+    // (Optional) Service Worker — add sw.js in this folder and uncomment to cache the hub
+    // if ('serviceWorker' in navigator) {
+    //   window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(()=>{}));
+    // }
+  </script>
+</body>
+</html>

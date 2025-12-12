@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="Signal-Power Dossier (United Kingdom): Interactive analysis of spyware, telecom signalling risks, data-broker practices, and platform governance — with immediate levers." />
+  <title>Signal-Power Dossier — United Kingdom | Planetary Restoration Archive</title>
+
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Signal-Power Dossier — United Kingdom","short_name":"Dossier UK","start_url":"./","display":"standalone"}' />
+
+  <style>
+    :root{
+      --bg:#0a0a0b; --fg:#e8e9ed; --muted:#9ba0a8; --accent:#64ffda;
+      --ink:#0f1419; --paper:#ffffff; --card:#131318; --line:#2a2d33;
+      --focus:#ffd54f; --danger:#ff5252; --ok:#4caf50; --warn:#ff9800;
+      --radius:20px; --pad:20px; --shadow:0 12px 32px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.2);
+      --gradient:linear-gradient(135deg, var(--accent) 0%, #3d5afe 100%);
+      --card-gradient:linear-gradient(145deg, var(--card) 0%, rgba(100,255,218,.03) 100%)
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f8fafc; --fg:#1a202c; --muted:#4a5568; --card:#fff; --line:#e2e8f0; --accent:#00bcd4;
+        --shadow:0 12px 32px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
+        --card-gradient:linear-gradient(145deg, var(--card) 0%, rgba(0,188,212,.02) 100%)
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      background-image:radial-gradient(circle at 25% 25%, rgba(100,255,218,.05) 0%, transparent 50%),
+                       radial-gradient(circle at 75% 75%, rgba(61,90,254,.05) 0%, transparent 50%)
+    }
+    a{ color: var(--accent); text-decoration:none }
+    a:focus-visible{ outline:3px solid var(--focus); outline-offset:2px }
+
+    main{ inline-size:min(100%,1400px); margin:0 auto; padding:clamp(16px,3vw,32px) }
+    header.site{
+      display:grid; gap:16px; padding:clamp(24px,4vw,40px);
+      border:1px solid var(--line); border-radius:20px; background:var(--card-gradient);
+      box-shadow:var(--shadow); container-type:inline-size; position:relative; overflow:hidden
+    }
+    header.site::before{content:""; position:absolute; inset:0; background:var(--gradient); opacity:.03; pointer-events:none}
+    header.site h1{
+      margin:0; font-size:clamp(24px,5cqi + 1rem,48px); letter-spacing:-.02em; font-weight:800;
+      background:var(--gradient); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent
+    }
+    header.site p{ margin:0; color:var(--muted); font-size:1.05rem }
+
+    .toolbar{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;
+      backdrop-filter:blur(8px); padding:12px; border-radius:16px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1) }
+    .toolbar .left,.toolbar .right{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+
+    button,.btn{
+      appearance:none; border:1px solid var(--line); background:var(--card); color:var(--fg);
+      padding:10px 16px; border-radius:12px; cursor:pointer; font-weight:600;
+      transition:transform .2s, box-shadow .2s, border-color .2s
+    }
+    button:hover,.btn:hover{ transform:translateY(-2px); box-shadow:0 0 20px rgba(100,255,218,.15), var(--shadow); border-color:var(--accent) }
+    button:focus-visible{ outline:3px solid var(--focus); outline-offset:2px }
+    .tag{ border:1px solid var(--accent); padding:6px 12px; border-radius:999px; color:var(--accent); font-size:.9rem; font-weight:600; background:rgba(100,255,218,.1) }
+
+    .nav-tabs{ display:flex; gap:4px; margin:20px 0; background:var(--card); border-radius:16px; padding:6px; border:1px solid var(--line) }
+    .nav-tab{ padding:12px 20px; border:none; background:transparent; color:var(--muted); border-radius:12px; cursor:pointer; font-weight:600 }
+    .nav-tab.active{ background:var(--gradient); color:#fff; box-shadow:0 0 20px rgba(100,255,218,.15) }
+
+    .tab-content{ display:none } .tab-content.active{ display:block }
+
+    .grid{ display:grid; gap:20px; margin-block:20px }
+    @container (min-width:900px){ .grid.cols-2{ grid-template-columns:1fr 1fr } }
+
+    section.card{
+      border:1px solid var(--line); background:var(--card-gradient);
+      border-radius:20px; padding:20px; box-shadow:var(--shadow); position:relative; overflow:hidden
+    }
+    section.card::before{content:""; position:absolute; left:0; right:0; top:0; height:4px; background:var(--gradient); opacity:.8}
+
+    .threat-level{ position:absolute; top:16px; right:16px; padding:6px 12px; border-radius:20px; font-size:.8rem; font-weight:700; text-transform:uppercase; color:#fff }
+    .threat-high{ background:var(--danger) } .threat-medium{ background:var(--warn) } .threat-low{ background:var(--ok) }
+
+    .callout{ border-left:4px solid var(--accent); padding:16px; background:rgba(100,255,218,.05); border-radius:0 12px 12px 0; margin:16px 0 }
+    .entity-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin:8px 0 }
+    .entity-name{ font-weight:700; color:var(--accent); margin-bottom:8px }
+    .entity-type{ font-size:.9rem; color:var(--muted); text-transform:uppercase }
+
+    #network-viz{ width:100%; height:560px; border:1px solid var(--line); border-radius:20px; background:var(--card); margin:20px 0; position:relative; overflow:hidden }
+
+    .timeline{ position:relative; padding:20px 0 }
+    .timeline::before{ content:""; position:absolute; left:50%; top:0; bottom:0; width:2px; background:var(--accent); transform:translateX(-50%) }
+    .timeline-event{ position:relative; margin:20px 0; padding:0 30px }
+    .timeline-event:nth-child(odd){ text-align:right; margin-right:50% }
+    .timeline-event:nth-child(even){ text-align:left; margin-left:50% }
+    .timeline-dot{ position:absolute; top:50%; width:16px; height:16px; background:var(--accent); border-radius:50%; transform:translateY(-50%) }
+    .timeline-event:nth-child(odd) .timeline-dot{ right:-8px } .timeline-event:nth-child(even) .timeline-dot{ left:-8px }
+
+    details{ border:1px solid var(--line); border-radius:16px; padding:16px; background:var(--card-gradient) }
+    details + details{ margin-top:12px }
+    summary{ cursor:pointer; font-weight:700 }
+
+    .foot{ color:var(--muted); font-size:.9rem }
+    .kbd{ font:600 .85rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; border:1px solid var(--line); border-radius:6px; padding:3px 8px; background:var(--card); color:var(--accent) }
+
+    @media print{
+      .toolbar,.hide-print,.nav-tabs{ display:none!important }
+      body{ background:#fff; color:#000 }
+      header.site,section.card{ box-shadow:none }
+      a{ color:#000; text-decoration:underline }
+      .tab-content{ display:block!important }
+    }
+    ::view-transition-group(root){ animation-duration:.3s }
+    @media (prefers-reduced-motion: reduce){ *{ animation:none!important; transition:none!important; scroll-behavior:auto!important } }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="site" role="banner" aria-labelledby="title">
+      <div class="toolbar">
+        <div class="left">
+          <span class="tag" aria-label="Country tag">🇬🇧 United Kingdom</span>
+          <span class="tag">Signal-Power Analysis</span>
+          <span class="tag" style="border-color:var(--danger); color:var(--danger)">Active Threats</span>
+        </div>
+        <div class="right">
+          <button id="theme" aria-pressed="false" aria-label="Toggle theme"><span class="kbd">T</span> Theme</button>
+          <button id="search-toggle" aria-label="Toggle search"><span class="kbd">/</span> Search</button>
+          <button id="print" class="hide-print" aria-label="Print dossier"><span class="kbd">⌘/Ctrl+P</span> Print</button>
+        </div>
+      </div>
+      <h1 id="title">Signal-Power Corruption Networks</h1>
+      <p>Interactive analysis of spyware, telecom signalling risks, data-broker exposure, and platform governance in the UK — plus immediate levers aligned to UK law.</p>
+
+      <div class="grid cols-2" aria-hidden="true">
+        <div class="entity-card" style="text-align:center">
+          <div style="font-size:2rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">24</div>
+          <div class="foot">Incidents & programmes tracked</div>
+        </div>
+        <div class="entity-card" style="text-align:center">
+          <div style="font-size:2rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">90+</div>
+          <div class="foot">Documented connections</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Search -->
+    <div class="hide-print" id="search-container" style="display:none; margin-top:16px">
+      <label class="sr-only" for="search-input">Search</label>
+      <input type="text" id="search-input" placeholder="Search entities, connections, or threats..." autocomplete="off"
+             style="width:100%;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--fg)">
+      <div id="search-results" style="margin-top:16px"></div>
+    </div>
+
+    <!-- Tabs -->
+    <nav class="nav-tabs hide-print" role="tablist" aria-label="Sections">
+      <button class="nav-tab active" data-tab="threats" role="tab" aria-selected="true" aria-controls="threats">Threat Analysis</button>
+      <button class="nav-tab" data-tab="network" role="tab" aria-selected="false" aria-controls="network">Network Map</button>
+      <button class="nav-tab" data-tab="timeline" role="tab" aria-selected="false" aria-controls="timeline">Timeline</button>
+      <button class="nav-tab" data-tab="actions" role="tab" aria-selected="false" aria-controls="actions">Action Items</button>
+    </nav>
+
+    <!-- TAB: Threats -->
+    <div class="tab-content active" id="threats" role="tabpanel" tabindex="0" aria-labelledby="Threat Analysis">
+      <section class="card" aria-labelledby="s1">
+        <div class="threat-level threat-high">Critical</div>
+        <h2 id="s1">🎯 Mercenary & State Spyware</h2>
+        <p class="callout">Citizen Lab reported Pegasus infections within UK government networks (including <strong>10 Downing Street</strong> and the <strong>FCO/FCDO</strong>) in 2020–2021; ongoing policy debate centres on investigatory powers and vendor controls.</p>
+        <div class="entity-card">
+          <div class="entity-name">Pegasus incidents (official networks)</div>
+          <div class="entity-type">Targeting/Compromise</div>
+          <div><strong>Source:</strong> Citizen Lab technical report; corroborated in subsequent press summaries.</div>
+        </div>
+        <div class="entity-card">
+          <div class="entity-name">Investigatory Powers (Amendment) Act 2024</div>
+          <div class="entity-type">Statute updating IPA 2016</div>
+          <div><strong>Changes:</strong> updates to codes/notifications, data-handling & oversight mechanics; further code updates consulted in 2025.</div>
+        </div>
+        <ul class="foot">
+          <li><a href="https://citizenlab.ca/2022/04/uk-government-officials-targeted-pegasus/" rel="noopener">Citizen Lab: UK gov officials targeted (Apr 2022)</a></li>
+          <li><a href="https://www.legislation.gov.uk/ukpga/2024/9" rel="noopener">Investigatory Powers (Amendment) Act 2024</a></li>
+          <li><a href="https://www.gov.uk/government/consultations/investigatory-powers-amendment-act-2024-codes-of-practice-and-notices-regulations/investigatory-powers-amendment-act-2024-codes-of-practice-and-notices-regulations" rel="noopener">Home Office: codes of practice updates (Mar 2025)</a></li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="s2">
+        <div class="threat-level threat-high">Critical</div>
+        <h2 id="s2">📡 Telecom Signalling Exploits (SS7/Global Titles)</h2>
+        <p>UK regulator action highlights risks from <strong>SS7</strong> and global-title abuse. Ofcom’s 2025 statement cites investigations into UK-issued global titles being used for location tracking abroad and reiterates signalling-layer threats.</p>
+        <div class="entity-card">
+          <div class="entity-name">Ofcom & NCSC</div>
+          <div class="entity-type">Regulatory & Security Guidance</div>
+          <div><strong>Focus:</strong> interconnect security, roaming exposure, remediation & operator obligations.</div>
+        </div>
+        <ul class="foot">
+          <li><a href="https://www.ofcom.org.uk/siteassets/resources/documents/consultations/category-1-10-weeks/185679-consultation-global-titles-and-mobile-network-security/associated-documents/statement-global-titles-and-mobile-network-security.pdf" rel="noopener">Ofcom: Global Titles & Mobile Network Security (Apr 2025)</a></li>
+          <li><a href="https://www.ncsc.gov.uk/files/Summary%20of%20the%20NCSCs%20security%20analysis%20for%20the%20UK%20telecoms%20sector.pdf" rel="noopener">NCSC telecoms security analysis (context)</a></li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="s3">
+        <div class="threat-level threat-medium">Moderate</div>
+        <h2 id="s3">📱 Cell-Site Simulators (IMSI-catchers)</h2>
+        <p>Use by UK police forces remains obscured by “neither confirm nor deny” policies. FOI history and watchdogs continue to push for transparency, minimization, and warrant standards.</p>
+        <div class="entity-card">
+          <div class="entity-name">UK Police & IMSI-catchers</div>
+          <div class="entity-type">Law Enforcement Capability</div>
+          <div><strong>Risk:</strong> dragnet collection, bystander capture; NDAs impede public disclosure.</div>
+        </div>
+        <ul class="foot">
+          <li><a href="https://privacyinternational.org/news-analysis/5206/remember-those-imsi-catchers-uk-authorities-play-hide-and-seek-use-intrusive" rel="noopener">Privacy International review (Jan 2023)</a></li>
+          <li><a href="https://www.wiltshire.police.uk/SysSiteAssets/foi-media/wiltshire/2021/07-september-2021/foi-2022-057-imsi-catchers.pdf" rel="noopener">Example FOI correspondence (Wiltshire Police)</a></li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="s4">
+        <div class="threat-level threat-medium">Moderate</div>
+        <h2 id="s4">🗂️ Data-Broker & Adtech Exposure</h2>
+        <p>ICO enforcement against large data brokers has been contested. The Experian case (direct-marketing data) saw mixed tribunal outcomes; ICO’s 2024 statement notes its appeal was dismissed in part.</p>
+        <div class="grid cols-2">
+          <div class="entity-card">
+            <div class="entity-name">Experian — direct marketing data</div>
+            <div class="entity-type">Data Broker / CRA</div>
+            <div><strong>Status:</strong> First-tier tribunal partly allowed Experian’s appeal (2023); ICO appeal dismissed (2024) while some aspects supported.</div>
+          </div>
+          <div class="entity-card">
+            <div class="entity-name">Adtech/RTB landscape</div>
+            <div class="entity-type">Advertising Technology</div>
+            <div><strong>Risk:</strong> sensitive inferences & cross-border demands; governance under UK GDPR/PECR.</div>
+          </div>
+        </div>
+        <ul class="foot">
+          <li><a href="https://ico.org.uk/about-the-ico/media-centre/news-and-blogs/2023/02/tribunal-rules-on-experian-appeal-against-ico-action/" rel="noopener">ICO: tribunal ruling (Feb 2023)</a></li>
+          <li><a href="https://ico.org.uk/about-the-ico/media-centre/news-and-blogs/2024/04/ico-statement-on-upper-tribunal-ruling/" rel="noopener">ICO: Upper Tribunal statement (Apr 2024)</a></li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="s5">
+        <div class="threat-level threat-medium">Moderate</div>
+        <h2 id="s5">📺 Platform Governance — Online Safety Act</h2>
+        <p>The Online Safety Act regime is live, with Ofcom codes now in force for illegal content and children’s protections. Enforcement windows and risk-assessment deadlines run through 2025.</p>
+        <ul class="foot">
+          <li><a href="https://www.gov.uk/government/publications/online-safety-act-explainer/online-safety-act-explainer" rel="noopener">Government explainer & milestones</a></li>
+          <li><a href="https://www.ofcom.org.uk/online-safety/illegal-and-harmful-content/important-dates-for-online-safety-compliance" rel="noopener">Ofcom: important dates for compliance</a></li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="s6">
+        <div class="threat-level threat-low">Guardrails & Case Law</div>
+        <h2 id="s6">⚖️ Oversight & European Court Findings</h2>
+        <p>In <em>Big Brother Watch v. UK</em> the Strasbourg court scrutinized bulk interception and intelligence-sharing. The ruling imposed safeguards but did not ban bulk powers <em>per se</em>, informing UK oversight design.</p>
+        <ul class="foot">
+          <li><a href="https://hudoc.echr.coe.int/fre?i=001-210077" rel="noopener">ECHR judgment material</a></li>
+          <li><a href="https://globalfreedomofexpression.columbia.edu/cases/big-brother-watch-v-united-kingdom/" rel="noopener">Case summary (academic)</a></li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- TAB: Network -->
+    <div class="tab-content" id="network" role="tabpanel" tabindex="0" aria-labelledby="Network Map">
+      <section class="card">
+        <h2>🕸️ Corruption Network Visualization (UK)</h2>
+        <p>Relationships between spyware vendors, data brokers, telecoms, platforms, and UK authorities. Drag nodes to explore.</p>
+        <div id="network-viz" role="img" aria-label="Interactive network map of entities and connections"></div>
+        <div class="foot"><strong>Legend:</strong> <span style="color:var(--danger)">● Authorities</span> <span style="color:var(--warn)">● Vendors</span> <span style="color:var(--accent)">● Brokers</span> <span style="color:var(--ok)">● Platforms</span> <span style="color:#3d5afe">● Telecom/Programs</span></div>
+      </section>
+
+      <section class="card">
+        <h2>🔗 Key Relationships (UK)</h2>
+        <div class="grid">
+          <details>
+            <summary>Spyware incidents & powers</summary>
+            <p><strong>Core:</strong> UK gov compromise reports ↔ IPA 2016 (as amended 2024) oversight; vendor procurement controls.</p>
+          </details>
+          <details>
+            <summary>Telecom signalling</summary>
+            <p><strong>Core:</strong> Operators ↔ Ofcom/NCSC on SS7/GT remediation; roaming/interconnect edges.</p>
+          </details>
+          <details>
+            <summary>Data-broker & platform loop</summary>
+            <p><strong>Flow:</strong> Consumer data → brokers/CRAs → marketers/public sector; regulatory guardrails via UK GDPR/PECR + Ofcom/ICO roles.</p>
+          </details>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB: Timeline -->
+    <div class="tab-content" id="timeline" role="tabpanel" tabindex="0" aria-labelledby="Timeline">
+      <section class="card">
+        <h2>📅 Signal-Power Evolution Timeline (UK)</h2>
+        <div class="timeline">
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2016: IPA enacted</h3>
+            <p>Establishes UK investigatory powers framework and oversight structures.</p>
+          </div>
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2018–2021: ECHR litigation</h3>
+            <p><em>Big Brother Watch</em> scrutinizes bulk powers; safeguards strengthened.</p>
+          </div>
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>2020–2021: Pegasus incidents</h3>
+            <p>Citizen Lab notifies UK of suspected infections in official networks.</p>
+          </div>
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>Apr 2025: Ofcom GT/SS7 statement</h3>
+            <p>Regulatory focus on global-title abuse and signalling security.</p>
+          </div>
+          <div class="timeline-event">
+            <div class="timeline-dot"></div>
+            <h3>Mar–Jul 2025: OSA code milestones</h3>
+            <p>Illegal content and children’s codes take effect; enforcement windows open.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB: Actions -->
+    <div class="tab-content" id="actions" role="tabpanel" tabindex="0" aria-labelledby="Action Items">
+      <section class="card" aria-labelledby="levers">
+        <h2 id="levers">⚡ Immediate Stop-Gap Actions (UK-aligned)</h2>
+        <p class="callout">Dovetails with UK IPA, Ofcom codes, and ICO expectations. Drafted to be mirror-safe for councils, PCCs, and devolved bodies.</p>
+        <div class="grid">
+          <details open><summary>🛡️ Spyware/High-Risk Tools</summary>
+            <ol>
+              <li>Judicial authorization + necessity/proportionality for invasive tools (ODIT/spyware).</li>
+              <li>Public DPIA within 30 days of program start; quarterly aggregate reporting (vendor, legal basis, categories).</li>
+              <li>Vendor NDAs unenforceable against courts/IPC/ICO disclosure.</li>
+            </ol>
+          </details>
+          <details><summary>📡 Signalling/Interconnect Hardening</summary>
+            <ol>
+              <li>Carrier attestations on SS7/GT defences and roaming-edge audits; annual third-party testing with public summaries.</li>
+              <li>Incident statistics and corrective action logs; publishable without compromising active ops.</li>
+            </ol>
+          </details>
+          <details><summary>🗂️ Data-Broker Containment</summary>
+            <ol>
+              <li>No acquisition of location/behavioural datasets absent lawful basis and minimization plan.</li>
+              <li>Public broker relationship log; deletion audits; PECR direct-marketing conformance.</li>
+            </ol>
+          </details>
+          <details><summary>📱 IMSI-catcher Governance</summary>
+            <ol>
+              <li>Warrant standard; purge attestations for non-targets; capability summaries and annual oversight review.</li>
+            </ol>
+          </details>
+          <details><summary>📺 Platform Governance (OSA)</summary>
+            <ol>
+              <li>Maintain DSR-style (documented systemic risk) logs; “no informal pressure” policy with audit trails.</li>
+              <li>Track Ofcom deadlines and implement risk assessments/design-accountability measures.</li>
+            </ol>
+          </details>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="generator">
+        <h2 id="generator">📋 Implementation Toolkit (Model Resolution / By-law)</h2>
+        <p class="foot">Edit inline; then copy or download. Language aligns with IPA/OSA/ICO references.</p>
+<textarea id="pledge" aria-label="Model UK text" style="width:100%;min-height:300px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
+SIGNAL-POWER CORRUPTION PREVENTION RESOLUTION (UNITED KINGDOM)
+
+1 — Spyware/High-Risk Tools
+(a) Prior judicial authorization with necessity/proportionality; (b) DPIA published within 30 days of program start; (c) Quarterly aggregates on vendor, legal basis, and categories; (d) NDAs unenforceable against courts, IPCO, and ICO oversight.
+
+2 — Data-Broker Restrictions
+(a) No location/behavioural dataset acquisition absent lawful basis and minimization plan; (b) Sensitive-location embargo (clinics, shelters, schools, places of worship, protest sites); (c) Public broker relationship log; (d) Deletion audits; (e) PECR-compliant direct marketing only.
+
+3 — Cell-Site/Signalling Governance
+(a) Warrant standard and purge attestations for IMSI-catchers; (b) SS7/Global Title defences with annual third-party testing; (c) Interconnect incident statistics and corrective actions.
+
+4 — Platform Governance (Online Safety Act)
+(a) Systemic-risk documentation and audits; (b) Child-protection design measures per Ofcom codes; (c) Transparent takedown request logs including legal basis.
+
+5 — Oversight & Remedies
+(a) Private right of action where permitted; (b) Whistleblower protection; (c) Contractor debarment for repeated non-compliance; (d) Independent oversight board including civil society and technologists.
+
+EFFECTIVE DATE: [INSERT]
+</textarea>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button id="copy" class="btn">📋 Copy</button>
+          <button id="download" class="btn">📥 Download</button>
+          <button id="customize" class="btn">⚙️ Reset</button>
+        </div>
+      </section>
+    </div>
+
+    <footer class="foot" role="contentinfo" style="margin-block:32px">
+      <p><strong>Signal-Power Dossier v2.1 (UK)</strong> — Offline, keyboardable, print-ready. Keys: <span class="kbd">T</span> theme, <span class="kbd">/</span> search, <span class="kbd">⌘/Ctrl+P</span> print.</p>
+    </footer>
+  </main>
+
+  <script>
+    // Progressive View Transitions
+    const runVT = ('startViewTransition' in document);
+    const root = document.documentElement;
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme');
+    const cycle = {system:'light', light:'dark', dark:'system'};
+    function setTheme(next){
+      const set=()=>root.setAttribute('data-theme', next);
+      runVT ? document.startViewTransition(set) : set();
+      localStorage.setItem('theme', next);
+      themeBtn.setAttribute('aria-pressed', String(next!=='system'));
+    }
+    setTheme(localStorage.getItem('theme') || 'system');
+    themeBtn.addEventListener('click', ()=> setTheme(cycle[root.getAttribute('data-theme')]));
+
+    // Print
+    document.getElementById('print').addEventListener('click', ()=> window.print());
+
+    // Search toggle + '/'
+    const searchToggle = document.getElementById('search-toggle');
+    const searchContainer = document.getElementById('search-container');
+    const searchInput = document.getElementById('search-input');
+    searchToggle.addEventListener('click', ()=>{
+      const show = searchContainer.style.display === 'none';
+      searchContainer.style.display = show ? 'block' : 'none';
+      if(show) searchInput.focus();
+    });
+    document.addEventListener('keydown', (e)=>{
+      if(e.key==='/' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName!=='INPUT'){
+        e.preventDefault(); searchContainer.style.display='block'; searchInput.focus();
+      }
+    });
+
+    // Tabs
+    const tabButtons = document.querySelectorAll('.nav-tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const target = btn.dataset.tab;
+        tabButtons.forEach(b=>{ b.classList.toggle('active', b===btn); b.setAttribute('aria-selected', String(b===btn)); });
+        tabContents.forEach(c=> c.classList.toggle('active', c.id===target));
+        if(target==='network'){ initNetworkViz(); }
+      });
+    });
+
+    // Simple network viz (vanilla SVG)
+    let networkInit=false;
+    function initNetworkViz(){
+      if(networkInit) return; networkInit=true;
+      const container = document.getElementById('network-viz');
+      const w = container.clientWidth, h = container.clientHeight;
+      const NS='http://www.w3.org/2000/svg';
+      const svg=document.createElementNS(NS,'svg'); svg.setAttribute('width',w); svg.setAttribute('height',h); container.appendChild(svg);
+
+      const nodes=[
+        {id:'IP(A)A 2024',type:'authority',x:w*.28,y:h*.26},
+        {id:'Downing St',type:'authority',x:w*.18,y:h*.40},
+        {id:'Pegasus',type:'vendor',x:w*.80,y:h*.24},
+        {id:'Telecoms',type:'telecom',x:w*.52,y:h*.60},
+        {id:'Ofcom',type:'program',x:w*.62,y:h*.72},
+        {id:'ICO',type:'authority',x:w*.20,y:h*.78},
+        {id:'Experian',type:'broker',x:w*.80,y:h*.78},
+        {id:'Platforms',type:'platform',x:w*.50,y:h*.20}
+      ];
+      const links=[
+        {s:'Downing St',t:'Pegasus',w:3},
+        {s:'Telecoms',t:'Ofcom',w:3},
+        {s:'ICO',t:'Experian',w:2},
+        {s:'IP(A)A 2024',t:'ICO',w:1},
+        {s:'Platforms',t:'Ofcom',w:2}
+      ];
+
+      const color=(t)=>{
+        const s=getComputedStyle(document.body);
+        if(t==='authority') return s.getPropertyValue('--danger').trim();
+        if(t==='vendor') return s.getPropertyValue('--warn').trim();
+        if(t==='broker') return s.getPropertyValue('--accent').trim();
+        if(t==='platform') return s.getPropertyValue('--ok').trim();
+        return '#3d5afe'; // telecom/program
+      };
+
+      const lineEls=links.map(L=>{
+        const el=document.createElementNS(NS,'line');
+        el.setAttribute('stroke', getComputedStyle(document.body).getPropertyValue('--accent').trim());
+        el.setAttribute('stroke-width', String(1.5*L.w));
+        el.setAttribute('stroke-opacity','.6');
+        svg.appendChild(el); return {L,el};
+      });
+
+      const groups=nodes.map(N=>{
+        const g=document.createElementNS(NS,'g');
+        const c=document.createElementNS(NS,'circle'); c.setAttribute('r','24'); c.setAttribute('fill',color(N.type)); c.setAttribute('stroke','#fff'); c.setAttribute('stroke-width','2.5');
+        const t=document.createElementNS(NS,'text'); t.setAttribute('fill','#fff'); t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','11'); t.setAttribute('dy','.35em'); t.textContent=N.id;
+        g.appendChild(c); g.appendChild(t); svg.appendChild(g);
+
+        let drag=false, ox=0, oy=0;
+        g.addEventListener('pointerdown',e=>{drag=true;ox=e.clientX-N.x;oy=e.clientY-N.y;g.setPointerCapture(e.pointerId)});
+        g.addEventListener('pointermove',e=>{ if(!drag) return; N.x=e.clientX-ox; N.y=e.clientY-oy; tick(); });
+        g.addEventListener('pointerup',()=>drag=false);
+        g.addEventListener('pointercancel',()=>drag=false);
+        return {N,g};
+      });
+
+      function tick(){
+        lineEls.forEach(({L,el})=>{
+          const a=nodes.find(n=>n.id===L.s), b=nodes.find(n=>n.id===L.t);
+          el.setAttribute('x1',a.x); el.setAttribute('y1',a.y);
+          el.setAttribute('x2',b.x); el.setAttribute('y2',b.y);
+        });
+        groups.forEach(({N,g})=> g.setAttribute('transform',`translate(${N.x},${N.y})`));
+      }
+      tick();
+      // quick settle
+      let steps=80; (function anim(){ if(!steps--) return; links.forEach(L=>{
+          const a=nodes.find(n=>n.id===L.s), b=nodes.find(n=>n.id===L.t);
+          const dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy)||1, target=150, k=(d-target)*.02;
+          a.x+=dx/d*k; a.y+=dy/d*k; b.x-=dx/d*k; b.y-=dy/d*k;
+        }); tick(); requestAnimationFrame(anim); })();
+
+      new ResizeObserver(r=>{ const cr=r[0].contentRect; svg.setAttribute('width',cr.width); svg.setAttribute('height',cr.height); tick(); }).observe(container);
+    }
+
+    // Copy/Download/Reset
+    const pledge=document.getElementById('pledge');
+    const copyBtn=document.getElementById('copy');
+    const dlBtn=document.getElementById('download');
+    const resetBtn=document.getElementById('customize');
+    const defaultText=pledge.value;
+
+    copyBtn.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(pledge.value);
+        const o=copyBtn.textContent; copyBtn.textContent='✅ Copied!'; setTimeout(()=>copyBtn.textContent=o,1200);
+      }catch{ alert('Copy failed. Please select and copy manually.'); }
+    });
+    dlBtn.addEventListener('click', ()=>{
+      const blob=new Blob([pledge.value],{type:'text/plain'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='signal_power_resolution_UK.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+    });
+    resetBtn.addEventListener('click', ()=> pledge.value=defaultText);
+  </script>
+</body>
+</html>
